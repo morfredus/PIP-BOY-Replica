@@ -142,6 +142,29 @@ void ledPulse() {
 }
 
 // ========================================
+// Gestion du rétroéclairage TFT
+// ========================================
+
+// Configuration PWM pour le rétroéclairage
+#define TFT_BL_PWM_CHANNEL 0
+#define TFT_BL_PWM_FREQ 5000
+#define TFT_BL_PWM_RESOLUTION 8
+
+void setBacklight(uint8_t brightness) {
+    // brightness: 0-255
+    ledcWrite(TFT_BL_PWM_CHANNEL, brightness);
+}
+
+void initBacklight() {
+    // Configuration du canal PWM pour le rétroéclairage
+    ledcSetup(TFT_BL_PWM_CHANNEL, TFT_BL_PWM_FREQ, TFT_BL_PWM_RESOLUTION);
+    ledcAttachPin(PIN_TFT_BL, TFT_BL_PWM_CHANNEL);
+
+    // Allumer le rétroéclairage à pleine puissance
+    setBacklight(255);
+}
+
+// ========================================
 // Initialisation WiFi
 // ========================================
 
@@ -222,6 +245,10 @@ void setup() {
     tft.init(240, 240, SPI_MODE2);
     tft.setRotation(2);  // Orientation spécifiée
     tft.fillScreen(PIPBOY_BLACK);
+
+    // Initialiser le rétroéclairage
+    Serial.println("[DISPLAY] Initializing backlight...");
+    initBacklight();
 
     // Son de démarrage
     playBootSound();
