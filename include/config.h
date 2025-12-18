@@ -72,9 +72,12 @@
 // Sensor update interval (in milliseconds)
 #define SENSOR_UPDATE_INTERVAL  2000    // Update every 2 seconds
 
-// Temperature warning thresholds (in Celsius)
-#define TEMP_WARNING_MIN        10.0f   // Below this = warning
-#define TEMP_WARNING_MAX        35.0f   // Above this = warning
+// Temperature warning thresholds
+// IMPORTANT: These values are ALWAYS in Celsius internally
+// If you use Fahrenheit display (TEMPERATURE_UNIT = 'F'),
+// the conversion will be done automatically for display only
+#define TEMP_WARNING_MIN        10.0f   // °C - Below this = warning (50°F)
+#define TEMP_WARNING_MAX        35.0f   // °C - Above this = warning (95°F)
 
 // Humidity warning thresholds (in percentage)
 #define HUMIDITY_WARNING_MIN    20.0f   // Below this = warning

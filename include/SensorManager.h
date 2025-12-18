@@ -4,6 +4,7 @@
 #include <Wire.h>
 #include <Adafruit_AHTX0.h>
 #include <Adafruit_BMP280.h>
+#include "config.h"
 
 class SensorManager {
 private:
@@ -25,7 +26,7 @@ private:
 
     // Temps de la dernière lecture
     unsigned long lastReadTime;
-    const unsigned long READ_INTERVAL = 2000; // Lecture toutes les 2 secondes
+    const unsigned long READ_INTERVAL = SENSOR_UPDATE_INTERVAL;
 
 public:
     SensorManager(int lightPin) {
@@ -135,15 +136,15 @@ public:
 
     // Détecter des conditions d'alerte
     bool isTemperatureWarning() {
-        return (temperature < 10.0 || temperature > 35.0);
+        return (temperature < TEMP_WARNING_MIN || temperature > TEMP_WARNING_MAX);
     }
 
     bool isHumidityWarning() {
-        return (humidity < 20.0 || humidity > 80.0);
+        return (humidity < HUMIDITY_WARNING_MIN || humidity > HUMIDITY_WARNING_MAX);
     }
 
     bool isPressureWarning() {
-        return (pressure < 980.0 || pressure > 1040.0);
+        return (pressure < PRESSURE_WARNING_MIN || pressure > PRESSURE_WARNING_MAX);
     }
 };
 

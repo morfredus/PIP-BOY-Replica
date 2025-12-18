@@ -5,6 +5,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 et ce projet adhère au [Versionnage Sémantique](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2025-12-18
+
+### Corrigé
+- SensorManager utilise maintenant les constantes de configuration de config.h au lieu de valeurs codées en dur
+- Les seuils d'alerte de température, humidité et pression référencent correctement TEMP_WARNING_MIN/MAX, HUMIDITY_WARNING_MIN/MAX, et PRESSURE_WARNING_MIN/MAX
+- L'intervalle de mise à jour des capteurs utilise maintenant SENSOR_UPDATE_INTERVAL de config.h
+- Ajout d'une documentation claire dans config.h précisant que les seuils de température sont toujours stockés en Celsius en interne
+
+### Modifié
+- Ajout de l'inclusion de config.h dans SensorManager.h pour accéder aux constantes de configuration
+- Amélioration des commentaires sur les seuils de température pour clarifier que Celsius est utilisé en interne avec équivalents Fahrenheit notés
+
 ## [1.2.0] - 2025-12-18
 
 ### Ajouté
