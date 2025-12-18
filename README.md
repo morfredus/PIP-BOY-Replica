@@ -1,126 +1,96 @@
-# Pip-Boy Replica - Fallout Style
+# PIP-BOY Replica - Fallout Style Interface
 
-Réplique fonctionnelle d'un Pip-Boy (Fallout) sur écran TFT ST7789 240x240 avec ESP32-S3.
+A fully functional Pip-Boy replica inspired by the Fallout game series, built with ESP32-S3 and featuring a retro-futuristic green monochrome interface.
 
-![Pip-Boy](https://fallout.fandom.com/wiki/Pip-Boy_3000)
+![Version](https://img.shields.io/badge/version-1.2.0-green.svg)
+![Platform](https://img.shields.io/badge/platform-ESP32--S3-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-orange.svg)
 
-## Matériel requis
+## Features
 
-### Contrôleur
-- **ESP32-S3 DevKitC-1 N16R8** (16MB Flash + 8MB PSRAM)
+### 📊 Four Main Screens
 
-### Affichage
-- **TFT ST7789 240x240** (SPI, orientation 2)
-- Interface verte monochrome style phosphorescent
+- **STAT** - Real-time sensor statistics
+  - Temperature (°C)
+  - Humidity (%)
+  - Atmospheric pressure (hPa)
+  - Altitude (m)
+  - Ambient light level (%)
+  - Visual warnings for out-of-range values
 
-### Capteurs (I2C)
-- **AHT20** : Température et humidité
-- **BMP280** : Pression atmosphérique et altitude
+- **DATA** - Weather information via WiFi
+  - WiFi connection status
+  - Signal strength (RSSI)
+  - External weather conditions (OpenMeteo API)
+  - External temperature and humidity
 
-### Entrées/Sorties
-- **3 Boutons** :
-  - Bouton BOOT (pin 0) : Reset/Retour
-  - Bouton 1 (pin 38) : Navigation
-  - Bouton 2 (pin 39) : Action/Sélection
-- **LED RGB** (GND commun, pins 21/41/42) : Indicateurs de statut
-- **NeoPixel** (pin 48) : Effets lumineux
-- **Buzzer** (pin 6) : Sons et effets sonores
-- **Capteur de luminosité** (pin 4) : LDR
+- **RADIO** - Message system
+  - Broadcast messages
+  - Selectable message list
+  - Scrollable interface
 
-## Fonctionnalités
+- **MAP** - Animated radar display
+  - Rotating radar sweep
+  - Detection blips
+  - Coordinate display
 
-### Écrans disponibles
+### 🎮 User Interaction
 
-#### 1. STAT - Statistiques
-Affiche les données des capteurs en temps réel :
-- Température (°C)
-- Humidité relative (%)
-- Pression atmosphérique (hPa)
-- Altitude estimée (m)
-- Niveau de luminosité ambiante (%)
-- Statut des capteurs
+- **Button 1**: Navigate between screens (STAT → DATA → RADIO → MAP)
+- **Button 2**: Context action (refresh sensors, fetch weather, select message)
+- **Boot Button**: Quick return to STAT screen
+- **Long Press Button 1**: Restart boot animation
+- **Long Press Button 2**: Reconnect WiFi
 
-Alertes visuelles si les valeurs sortent des plages normales.
+### 🔊 Audio & Visual Feedback
 
-#### 2. DATA - Données météo
-Récupère et affiche la météo via API :
-- Statut WiFi et signal RSSI
-- Conditions météorologiques actuelles
-- Température extérieure
-- Humidité extérieure
+- RGB LED status indicator (green/orange/red)
+- NeoPixel RGB LED
+- Pulsing LED effect on sensor warnings
+- Buzzer with different tones:
+  - Click sound (800 Hz)
+  - Select sound (1200 Hz)
+  - Error sound (400/300 Hz)
+  - Boot sequence (600/800/1000 Hz)
 
-Utilise l'API OpenMeteo (gratuite, sans clé requise).
+### 📡 Connectivity
 
-#### 3. RADIO - Messages
-Affiche des messages style transmission radio :
-- Messages système
-- Notifications
-- Messages Telegram (futur)
+- WiFi multi-network support with automatic fallback
+- Weather data from OpenMeteo API (no API key required)
+- Real-time sensor monitoring
 
-Navigation dans la liste avec sélection.
+## Hardware Requirements
 
-#### 4. MAP - Radar
-Écran radar circulaire animé :
-- Balayage radar en temps réel
-- Blips de détection
-- Coordonnées basées sur les capteurs
-- Animation fluide
+### Main Components
 
-### Effets visuels et sonores
+- **ESP32-S3 DevKitC-1 N16R8**
+  - 16MB Flash
+  - 8MB PSRAM
+  - Dual-core Xtensa LX7 @ 240MHz
 
-#### Sons (Buzzer)
-- **Bip de navigation** : Changement d'écran
-- **Bip de sélection** : Action confirmée
-- **Son d'erreur** : Problème détecté
-- **Séquence de boot** : Au démarrage
+- **Display**
+  - ST7789 240x240 TFT LCD (SPI)
+  - PWM-controlled backlight
 
-#### LED RGB & NeoPixel
-- **Vert** : Système nominal
-- **Orange** : Action en cours
-- **Rouge** : Erreur ou alerte
-- **Pulsation** : Alerte capteurs
+- **Sensors (I2C)**
+  - AHT20: Temperature and humidity sensor
+  - BMP280: Atmospheric pressure sensor
+  - LDR: Light-dependent resistor (analog)
 
-### Contrôles
+- **User Interface**
+  - 3 push buttons
+  - Passive buzzer
+  - RGB LED (common cathode)
+  - WS2812B NeoPixel (integrated on ESP32-S3)
 
-#### Navigation de base
-- **Bouton 1** (court) : Écran suivant (STAT → DATA → RADIO → MAP)
-- **Bouton 2** (court) : Action contextuelle (rafraîchir, fetch, sélection)
-- **Bouton BOOT** (court) : Retour à l'écran STAT
+### Pin Configuration
 
-#### Actions spéciales
-- **Bouton 1** (long, 1s) : Redémarrer la séquence de boot
-- **Bouton 2** (long, 1s) : Reconnecter le WiFi
+See [board_config.h](include/board_config.h) for complete pin mapping.
 
-## Configuration
+**Key Connections:**
 
-### 1. Remplir les identifiants WiFi et API
-
-Éditer `include/secrets.h` :
-
-```cpp
-// WiFi
-#define WIFI_SSID "VotreSSID"
-#define WIFI_PASSWORD "VotreMotDePasse"
-
-// Telegram (optionnel)
-#define TELEGRAM_BOT_TOKEN "VotreToken"
-#define TELEGRAM_CHAT_ID "VotreChatID"
-
-// AccuWeather (optionnel, si vous préférez à OpenMeteo)
-#define ACCUWEATHER_API_KEY "VotreCle"
-#define ACCUWEATHER_LOCATION_KEY "VotreLocation"
-
-// OpenMeteo (coordonnées GPS)
-#define OPENMETEO_LATITUDE "48.8566"   // Exemple: Paris
-#define OPENMETEO_LONGITUDE "2.3522"
-```
-
-### 2. Vérifier le câblage
-
-Tous les pins sont définis dans `include/board_config.h`.
-
-#### TFT ST7789
-| Signal | Pin ESP32 |
+#### TFT ST7789 Display (SPI)
+| Signal | ESP32 Pin |
 |--------|-----------|
 | MOSI   | 11        |
 | SCLK   | 12        |
@@ -129,126 +99,270 @@ Tous les pins sont définis dans `include/board_config.h`.
 | RST    | 13        |
 | BL     | 7         |
 
-#### I2C (AHT20 + BMP280)
-| Signal | Pin ESP32 |
-|--------|-----------|
-| SDA    | 15        |
-| SCL    | 16        |
+#### I2C Bus (AHT20 + BMP280)
+| Signal | ESP32 Pin | Notes |
+|--------|-----------|-------|
+| SDA    | 15        | 4.7kΩ pull-up to 3.3V required |
+| SCL    | 16        | 4.7kΩ pull-up to 3.3V required |
 
-**Important** : Résistances pull-up 4.7kΩ vers 3.3V obligatoires !
+#### RGB LED (Common Cathode)
+| Color  | ESP32 Pin | Resistor  |
+|--------|-----------|-----------|
+| Red    | 21        | 220-470Ω  |
+| Green  | 41        | 220-470Ω  |
+| Blue   | 42        | 220-470Ω  |
 
-#### LED RGB (GND commun)
-| Couleur | Pin ESP32 | Résistance |
-|---------|-----------|------------|
-| Rouge   | 21        | 220-470Ω   |
-| Vert    | 41        | 220-470Ω   |
-| Bleu    | 42        | 220-470Ω   |
+#### Other Components
+| Component      | ESP32 Pin | Notes                           |
+|----------------|-----------|---------------------------------|
+| NeoPixel       | 48        | Integrated on module            |
+| Button 1       | 38        | Internal pull-up enabled        |
+| Button 2       | 39        | Internal pull-up enabled        |
+| Boot Button    | 0         | Already on DevKit               |
+| Buzzer         | 6         | Transistor driver + 1-10kΩ base |
+| Light Sensor   | 4         | Voltage divider ~10kΩ           |
 
-#### Autres
-| Composant       | Pin ESP32 | Notes                    |
-|----------------|-----------|--------------------------|
-| NeoPixel       | 48        | Intégrée sur le module   |
-| Bouton 1       | 38        | Pull-up interne          |
-| Bouton 2       | 39        | Pull-up interne          |
-| Bouton BOOT    | 0         | Déjà sur le devkit       |
-| Buzzer         | 6         | Transistor + R 1-10kΩ    |
-| LDR (lumière)  | 4         | Diviseur ~10kΩ           |
+## Software Setup
 
-### 3. Compiler et téléverser
+### Prerequisites
 
-```bash
-# Installer les dépendances
-pio lib install
+- [PlatformIO](https://platformio.org/) installed
+- USB-C cable for ESP32-S3 programming
+- WiFi network credentials
 
-# Compiler
-pio run
+### Installation
 
-# Téléverser
-pio run --target upload
+1. **Clone or download this repository**
 
-# Moniteur série
-pio device monitor
+2. **Configure WiFi credentials**
+
+   Create `include/secrets.h` with your WiFi networks:
+   ```cpp
+   #ifndef SECRETS_H
+   #define SECRETS_H
+
+   // WiFi credentials - Network 1
+   #define WIFI_SSID1 "YourNetworkName1"
+   #define WIFI_PASS1 "YourPassword1"
+
+   // WiFi credentials - Network 2
+   #define WIFI_SSID2 "YourNetworkName2"
+   #define WIFI_PASS2 "YourPassword2"
+
+   // Telegram Bot (optional)
+   #define TELEGRAM_BOT_TOKEN "YourBotToken"
+   #define TELEGRAM_CHAT_ID "YourChatID"
+
+   // AccuWeather (optional - alternative to OpenMeteo)
+   #define ACCUWEATHER_API_KEY "YourAPIKey"
+   #define ACCUWEATHER_LOCATION_KEY "YourLocationKey"
+
+   #endif
+   ```
+
+3. **Customize configuration (optional)**
+
+   Edit [include/config.h](include/config.h) to modify:
+   - Display settings (type, size, rotation)
+   - Input method (buttons and/or rotary encoder)
+   - Weather location (default: Bordeaux, France)
+   - Sensor thresholds
+   - Audio frequencies
+   - LED brightness
+   - Animation speeds
+
+4. **Build and upload**
+   ```bash
+   # Install dependencies
+   pio lib install
+
+   # Build project
+   pio run
+
+   # Upload to ESP32-S3
+   pio run --target upload
+
+   # Monitor serial output
+   pio device monitor
+   ```
+
+## Configuration
+
+### Display Settings
+
+In [config.h](include/config.h), you can configure:
+```cpp
+#define DISPLAY_TYPE_ST7789      // Display type
+#define DISPLAY_WIDTH    240     // Width in pixels
+#define DISPLAY_HEIGHT   240     // Height in pixels
+#define DISPLAY_ROTATION 2       // 0=0°, 1=90°, 2=180°, 3=270°
+#define BACKLIGHT_DEFAULT 255    // Brightness 0-255
 ```
 
-## Architecture du code
+### Weather Location
 
-```
-include/
-├── board_config.h      # Configuration des pins
-├── secrets.h           # Identifiants WiFi/API (à remplir)
-├── PipBoyUI.h          # Interface graphique Pip-Boy
-├── SensorManager.h     # Gestion des capteurs I2C
-├── MenuSystem.h        # Système de menus et écrans
-└── ButtonHandler.h     # Gestion des boutons avec debouncing
-
-src/
-└── main.cpp            # Programme principal
+Default location is Bordeaux, France. Edit in [config.h](include/config.h):
+```cpp
+#define WEATHER_LOCATION_NAME   "Bordeaux"
+#define WEATHER_LATITUDE        44.8378f
+#define WEATHER_LONGITUDE       -0.5792f
+#define WEATHER_TIMEZONE        "Europe/Paris"
+#define WEATHER_COUNTRY_CODE    "FR"
 ```
 
-### Classes principales
+### Sensor Thresholds
+
+Customize warning thresholds in [config.h](include/config.h):
+```cpp
+#define TEMP_WARNING_MIN        10.0f   // °C
+#define TEMP_WARNING_MAX        35.0f   // °C
+#define HUMIDITY_WARNING_MIN    20.0f   // %
+#define HUMIDITY_WARNING_MAX    80.0f   // %
+#define PRESSURE_WARNING_MIN    980.0f  // hPa
+#define PRESSURE_WARNING_MAX    1040.0f // hPa
+```
+
+## Project Structure
+
+```
+Test-Zone/
+├── include/
+│   ├── board_config.h      # Hardware pin definitions
+│   ├── config.h            # User-configurable parameters
+│   ├── secrets.h           # WiFi credentials (not in repo)
+│   ├── PipBoyUI.h          # UI rendering engine
+│   ├── SensorManager.h     # Sensor data management
+│   ├── MenuSystem.h        # Screen navigation system
+│   └── ButtonHandler.h     # Button input handling
+├── src/
+│   └── main.cpp            # Main application logic
+├── platformio.ini          # PlatformIO configuration
+├── CHANGELOG.md            # Version history (English)
+├── CHANGELOG_FR.md         # Version history (French)
+├── README.md               # This file
+└── README_FR.md            # Documentation (French)
+```
+
+### Main Classes
 
 #### `PipBoyUI`
-Gestion de l'interface graphique style Fallout :
-- Séquence de boot RobCo
-- Headers/footers stylisés
-- Tabs, boîtes de texte, barres de progression
-- Radar circulaire avec animations
-- Effets scanlines
+Fallout-style graphical interface management:
+- RobCo boot sequence animation
+- Stylized headers/footers
+- Tabs, text boxes, progress bars
+- Circular radar with animations
+- Scanline effects
 
 #### `SensorManager`
-Lecture des capteurs :
-- AHT20 (température, humidité)
-- BMP280 (pression, altitude)
-- LDR (luminosité)
-- Détection d'alertes
+Sensor data acquisition:
+- AHT20 (temperature, humidity)
+- BMP280 (pressure, altitude)
+- LDR (ambient light)
+- Alert detection
 
 #### `MenuSystem`
-Gestion des écrans et navigation :
-- 4 écrans (STAT/DATA/RADIO/MAP)
-- Récupération météo via HTTP
-- Animations et effets
+Screen navigation and management:
+- 4 screens (STAT/DATA/RADIO/MAP)
+- Weather data fetching via HTTP
+- Animations and effects
 
 #### `ButtonHandler`
-Gestion avancée des boutons :
-- Debouncing matériel
-- Détection d'appuis courts/longs
-- États pressé/relâché/maintenu
+Advanced button management:
+- Hardware debouncing
+- Short/long press detection
+- Pressed/released/held states
 
-## Dépendances (PlatformIO)
+## Dependencies
 
-Toutes les bibliothèques sont automatiquement installées via `platformio.ini` :
+Libraries automatically installed by PlatformIO:
+- Adafruit BusIO ^1.17.4
+- Adafruit GFX Library ^1.12.4
+- Adafruit ST7735 and ST7789 Library ^1.11.0
+- Adafruit AHTX0 ^2.0.5
+- Adafruit BMP280 Library ^2.6.8
+- Adafruit NeoPixel ^1.12.0
+- ArduinoJson ^7.0.4
+- UniversalTelegramBot ^1.3.0
 
-- `adafruit/Adafruit BusIO`
-- `adafruit/Adafruit GFX Library`
-- `adafruit/Adafruit ST7735 and ST7789 Library`
-- `adafruit/Adafruit AHTX0`
-- `adafruit/Adafruit BMP280 Library`
-- `adafruit/Adafruit NeoPixel`
-- `bblanchon/ArduinoJson`
-- `witnessmenow/UniversalTelegramBot`
+## Usage
 
-## Améliorations futures
+### Normal Operation
 
-- [ ] Intégration complète Telegram Bot (notifications)
-- [ ] Support AccuWeather en plus d'OpenMeteo
-- [ ] Écran INVENTORY avec liste d'objets
-- [ ] Sauvegarde des stats dans SPIFFS/LittleFS
-- [ ] Mode économie d'énergie (dimming de l'écran)
-- [ ] Thèmes de couleur alternatifs (ambre, blanc)
-- [ ] Écran de configuration WiFi via AP
-- [ ] Graphiques historiques des capteurs
-- [ ] Support RTC pour horloge en temps réel
+1. **Power on** - Device boots with visual and audio feedback
+2. **Navigate** - Press Button 1 to cycle through screens
+3. **Interact** - Press Button 2 for screen-specific actions:
+   - STAT: Refresh sensor readings
+   - DATA: Fetch weather data
+   - RADIO: Select next message
+   - MAP: Reset radar sweep
+4. **Quick reset** - Press Boot button to return to STAT screen
 
-## Crédits
+### LED Status Indicators
 
-Inspiré par le Pip-Boy de la série Fallout (Bethesda Game Studios).
+- **Green**: Normal operation
+- **Orange**: Processing/Activity
+- **Red**: Error or boot button pressed
+- **Pulsing Green**: Sensor warning active
 
-Projet éducatif réalisé avec ESP32-S3 et PlatformIO.
+## Troubleshooting
 
-## Licence
+### Display Issues
+- Check SPI wiring (MOSI, SCLK, CS, DC, RST)
+- Verify backlight connection to pin 7
+- Try different `DISPLAY_ROTATION` values in [config.h](include/config.h)
 
-MIT License - Libre d'utilisation et de modification.
+### Sensor Issues
+- Verify I2C pull-up resistors (4.7kΩ to 3.3V required)
+- Check I2C wiring (SDA→15, SCL→16)
+- Monitor serial output for sensor detection messages
+
+### WiFi Connection
+- Verify credentials in [secrets.h](include/secrets.h)
+- Check signal strength (device will retry 20 times)
+- Long press Button 2 to force reconnection
+
+### No Sound
+- Check buzzer wiring and transistor driver
+- Verify `ENABLE_SOUND` is `true` in [config.h](include/config.h)
+- Test with different `BUZZER_VOLUME` values
+
+## Future Enhancements
+
+- [ ] Full Telegram Bot integration (notifications)
+- [ ] AccuWeather support in addition to OpenMeteo
+- [ ] INVENTORY screen with item list
+- [ ] Statistics saving to SPIFFS/LittleFS
+- [ ] Power saving mode (screen dimming)
+- [ ] Alternative color themes (amber, white)
+- [ ] WiFi configuration screen via AP mode
+- [ ] Historical sensor data graphs
+- [ ] RTC support for real-time clock
+
+## Contributing
+
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Follow existing code style
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see LICENSE file for details.
+
+## Acknowledgments
+
+- Inspired by the Pip-Boy from Bethesda's Fallout series
+- Uses OpenMeteo free weather API
+- Built with Arduino and PlatformIO frameworks
+
+## Version History
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
+
+**Current Version: 1.2.0** - Configuration system and documentation
 
 ---
 
-**Vault-Tec vous souhaite une excellente survie dans le Wasteland !** ☢️
+**Vault-Tec wishes you excellent survival in the Wasteland!** ☢️

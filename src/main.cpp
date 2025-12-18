@@ -31,6 +31,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #include "board_config.h"
+#include "config.h"
 #include "secrets.h"
 #include "PipBoyUI.h"
 #include "SensorManager.h"
