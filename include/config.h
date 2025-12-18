@@ -43,7 +43,7 @@
 
 // Button configuration
 #define BUTTON_DEBOUNCE_MS      50      // Debounce delay in milliseconds
-#define LONG_PRESS_DURATION_MS  1000    // Long press threshold in milliseconds
+#define LONG_PRESS_DURATION_MS  2000    // Long press threshold in milliseconds
 
 // =========================================================
 // WEATHER CONFIGURATION

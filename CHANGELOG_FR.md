@@ -5,6 +5,26 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 et ce projet adhère au [Versionnage Sémantique](https://semver.org/spec/v2.0.0.html).
 
+
+## [1.3.2] - 2025-12-18
+
+### Modifié
+- Remplacement de UniversalTelegramBot par AsyncTelegram2 pour l'intégration Telegram (compatible ArduinoJson v7+ et maintenue)
+- Amélioration de la gestion du rebond et de la détection appui court/long sur les boutons (plus de faux appuis longs)
+- Durée d'appui long portée à 2000ms pour plus de fiabilité
+- Version incrémentée à 1.3.2 (patch semver)
+
+
+### Corrigé
+- **Patch 1.3.1** : Correction des avertissements de dépréciation ArduinoJson v7 dans la bibliothèque UniversalTelegramBot
+  - Remplacement de toutes les instances de `DynamicJsonDocument` déprécié par `JsonDocument`
+  - Élimine 10 avertissements de dépréciation lors de la compilation
+  - Voir [docs/PATCHES.md](docs/PATCHES.md) pour la documentation détaillée du patch et les instructions de maintenance
+
+### Documentation
+- Ajout de [docs/PATCHES.md](docs/PATCHES.md) pour suivre les patches des bibliothèques tierces
+- Documentation du patch de compatibilité ArduinoJson v7 pour UniversalTelegramBot
+
 ## [1.3.0] - 2025-12-18
 
 ### Modifié
