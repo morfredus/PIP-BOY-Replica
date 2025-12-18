@@ -78,22 +78,18 @@ public:
 };
 
 
+
 class ButtonHandler {
 private:
     Button* button1;
     Button* button2;
     Button* buttonBoot;
 
-    // Pour détecter les appuis longs/courts
     unsigned long button1PressTime;
     unsigned long button2PressTime;
-    bool button1LongPress;
-    bool button2LongPress;
-    bool button1ShortPress;
-    bool button2ShortPress;
-    bool button1Handled;
-    bool button2Handled;
-    const unsigned long LONG_PRESS_DURATION = 2000; // 2 secondes (plus fiable)
+    bool button1LongPressFired;
+    bool button2LongPressFired;
+    const unsigned long LONG_PRESS_DURATION = 2000;
 
 public:
     ButtonHandler(int pin1, int pin2, int pinBoot) {
@@ -102,12 +98,8 @@ public:
         buttonBoot = new Button(pinBoot);
         button1PressTime = 0;
         button2PressTime = 0;
-        button1LongPress = false;
-        button2LongPress = false;
-        button1ShortPress = false;
-        button2ShortPress = false;
-        button1Handled = false;
-        button2Handled = false;
+        button1LongPressFired = false;
+        button2LongPressFired = false;
     }
 
     void begin() {
@@ -124,68 +116,58 @@ public:
         // Gestion bouton 1
         if (button1->isPressed()) {
             button1PressTime = millis();
-            button1LongPress = false;
-            button1ShortPress = false;
-            button1Handled = false;
+            button1LongPressFired = false;
         }
-        if (button1->isHeld() && !button1Handled) {
-            if ((millis() - button1PressTime >= LONG_PRESS_DURATION) && !button1LongPress) {
-                button1LongPress = true;
-                button1Handled = true;
+        if (button1->isHeld() && !button1LongPressFired) {
+            if (millis() - button1PressTime >= LONG_PRESS_DURATION) {
+                button1LongPressFired = true;
             }
         }
-        if (button1->isReleased() && !button1Handled) {
-            if ((millis() - button1PressTime < LONG_PRESS_DURATION)) {
-                button1ShortPress = true;
-            }
-            button1Handled = true;
-        }
-        if (button1Handled && button1->isReleased()) {
-            // Reset pour le prochain cycle
-            button1LongPress = false;
-            button1ShortPress = false;
+        if (button1->isReleased()) {
+            button1LongPressFired = false;
         }
 
         // Gestion bouton 2
         if (button2->isPressed()) {
             button2PressTime = millis();
-            button2LongPress = false;
-            button2ShortPress = false;
-            button2Handled = false;
+            button2LongPressFired = false;
         }
-        if (button2->isHeld() && !button2Handled) {
-            if ((millis() - button2PressTime >= LONG_PRESS_DURATION) && !button2LongPress) {
-                button2LongPress = true;
-                button2Handled = true;
+        if (button2->isHeld() && !button2LongPressFired) {
+            if (millis() - button2PressTime >= LONG_PRESS_DURATION) {
+                button2LongPressFired = true;
             }
         }
-        if (button2->isReleased() && !button2Handled) {
-            if ((millis() - button2PressTime < LONG_PRESS_DURATION)) {
-                button2ShortPress = true;
-            }
-            button2Handled = true;
-        }
-        if (button2Handled && button2->isReleased()) {
-            button2LongPress = false;
-            button2ShortPress = false;
+        if (button2->isReleased()) {
+            button2LongPressFired = false;
         }
     }
 
     // Getters pour les boutons
-    bool button1Pressed() { bool v = button1ShortPress; button1ShortPress = false; return v; }
-    bool button2Pressed() { bool v = button2ShortPress; button2ShortPress = false; return v; }
+    bool button1Pressed() {
+        // Appui court : press/release sans long
+        if (button1->isReleased() && (millis() - button1PressTime < LONG_PRESS_DURATION) && !button1LongPressFired) return true;
+        return false;
+    }
+    bool button2Pressed() {
+        if (button2->isReleased() && (millis() - button2PressTime < LONG_PRESS_DURATION) && !button2LongPressFired) return true;
+        return false;
+    }
     bool bootPressed() { return buttonBoot->isPressed(); }
 
-    bool button1Released() { return button1->isReleased(); }
-    bool button2Released() { return button2->isReleased(); }
-    bool bootReleased() { return buttonBoot->isReleased(); }
-
-    bool button1Held() { return button1->isHeld(); }
-    bool button2Held() { return button2->isHeld(); }
-    bool bootHeld() { return buttonBoot->isHeld(); }
-
-    bool button1LongPressed() { bool v = button1LongPress; button1LongPress = false; return v; }
-    bool button2LongPressed() { bool v = button2LongPress; button2LongPress = false; return v; }
+    bool button1LongPressed() {
+        if (button1LongPressFired && button1->isHeld()) {
+            button1LongPressFired = false;
+            return true;
+        }
+        return false;
+    }
+    bool button2LongPressed() {
+        if (button2LongPressFired && button2->isHeld()) {
+            button2LongPressFired = false;
+            return true;
+        }
+        return false;
+    }
 
     ~ButtonHandler() {
         delete button1;

@@ -6,7 +6,13 @@ Le format est basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 et ce projet adhère au [Versionnage Sémantique](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.3.2] - 2025-12-18
+
+## [1.3.3] - 2025-12-18
+
+### Corrigé
+- Logique de gestion des boutons simplifiée et fiabilisée (appui court/long toujours détecté)
+- L'affichage des capteurs est systématiquement mis à jour lors de l'appui sur le bouton d'action
+- Version patch incrémentée à 1.3.3
 
 ### Modifié
 - Remplacement de UniversalTelegramBot par AsyncTelegram2 pour l'intégration Telegram (compatible ArduinoJson v7+ et maintenue)

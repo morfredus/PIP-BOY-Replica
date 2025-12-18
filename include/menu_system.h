@@ -74,26 +74,24 @@ public:
     void actionButton() {
         switch (currentScreen) {
             case SCREEN_STAT:
-                // Rafraîchir les capteurs
+                // Forcer la mise à jour des capteurs et affichage
                 sensors->update();
                 redraw();
                 break;
 
             case SCREEN_DATA:
-                // Tenter de récupérer la météo
                 fetchWeatherData();
                 redraw();
                 break;
 
             case SCREEN_RADIO:
-                // Défiler les messages
                 subMenuIndex = (subMenuIndex + 1) % radioMessageCount;
                 redraw();
                 break;
 
             case SCREEN_MAP:
-                // Reset du radar
                 radarSweepAngle = 0;
+                redraw();
                 break;
         }
     }
