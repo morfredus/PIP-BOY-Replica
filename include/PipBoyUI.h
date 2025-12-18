@@ -236,6 +236,11 @@ public:
             tft->print(message);
         }
     }
+
+    // Dessiner une ligne sur le radar (pour le sweep animé)
+    void drawRadarSweepLine(int x1, int y1, int x2, int y2) {
+        tft->drawLine(x1, y1, x2, y2, PIPBOY_LIGHTGREEN);
+    }
 };
 
 #endif // PIPBOY_UI_H

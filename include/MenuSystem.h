@@ -148,24 +148,29 @@ private:
         // Contenu
         int y = 60;
 
-        ui->drawStatLine(y, "TEMP", String(sensors->getTemperature(), 1) + " C",
+        String tempStr = String(sensors->getTemperature(), 1) + " C";
+        ui->drawStatLine(y, "TEMP", tempStr.c_str(),
                         sensors->isTemperatureWarning());
         y += 15;
 
-        ui->drawStatLine(y, "HUMIDITY", String(sensors->getHumidity(), 0) + " %",
+        String humidityStr = String(sensors->getHumidity(), 0) + " %";
+        ui->drawStatLine(y, "HUMIDITY", humidityStr.c_str(),
                         sensors->isHumidityWarning());
         y += 15;
 
-        ui->drawStatLine(y, "PRESSURE", String(sensors->getPressure(), 0) + " hPa",
+        String pressureStr = String(sensors->getPressure(), 0) + " hPa";
+        ui->drawStatLine(y, "PRESSURE", pressureStr.c_str(),
                         sensors->isPressureWarning());
         y += 15;
 
-        ui->drawStatLine(y, "ALTITUDE", String(sensors->getAltitude(), 0) + " m", false);
+        String altitudeStr = String(sensors->getAltitude(), 0) + " m";
+        ui->drawStatLine(y, "ALTITUDE", altitudeStr.c_str(), false);
         y += 20;
 
         // Barre de lumière
         int lightPercent = sensors->getLightPercent();
-        ui->drawStatLine(y, "LIGHT", String(lightPercent) + " %", false);
+        String lightStr = String(lightPercent) + " %";
+        ui->drawStatLine(y, "LIGHT", lightStr.c_str(), false);
         y += 12;
         ui->drawProgressBar(10, y, 220, 10, lightPercent);
 
@@ -193,15 +198,18 @@ private:
         } else {
             ui->drawStatLine(y, "WiFi", "Connected", false);
             y += 15;
-            ui->drawStatLine(y, "RSSI", String(WiFi.RSSI()) + " dBm", false);
+            String rssiStr = String(WiFi.RSSI()) + " dBm";
+            ui->drawStatLine(y, "RSSI", rssiStr.c_str(), false);
             y += 20;
 
             if (weatherDataAvailable) {
                 ui->drawStatLine(y, "WEATHER", weatherCondition.c_str(), false);
                 y += 15;
-                ui->drawStatLine(y, "TEMP EXT", String(weatherTemp, 1) + " C", false);
+                String tempExtStr = String(weatherTemp, 1) + " C";
+                ui->drawStatLine(y, "TEMP EXT", tempExtStr.c_str(), false);
                 y += 15;
-                ui->drawStatLine(y, "HUMIDITY EXT", String(weatherHumidity) + " %", false);
+                String humidityExtStr = String(weatherHumidity) + " %";
+                ui->drawStatLine(y, "HUMIDITY EXT", humidityExtStr.c_str(), false);
             } else {
                 ui->drawBlinkingMessage(10, y, "Press BTN2 to fetch");
             }
@@ -251,7 +259,7 @@ private:
         float rad = radarSweepAngle * 3.14159 / 180.0;
         int sweepX = centerX + radius * cos(rad);
         int sweepY = centerY + radius * sin(rad);
-        ui->tft->drawLine(centerX, centerY, sweepX, sweepY, PIPBOY_LIGHTGREEN);
+        ui->drawRadarSweepLine(centerX, centerY, sweepX, sweepY);
 
         // Quelques blips aléatoires pour l'effet
         ui->drawRadarBlip(centerX, centerY, 30, (radarSweepAngle + 45) % 360, false);

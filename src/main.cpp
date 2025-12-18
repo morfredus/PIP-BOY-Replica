@@ -25,6 +25,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <WiFi.h>
+#include <WiFiMulti.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
 #include <Adafruit_NeoPixel.h>
@@ -40,11 +41,14 @@
 // Objets globaux
 // ========================================
 
-// …cran TFT
+// Ecran TFT
 Adafruit_ST7789 tft = Adafruit_ST7789(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_MOSI, PIN_TFT_SCLK, PIN_TFT_RST);
 
 // NeoPixel
 Adafruit_NeoPixel neopixel = Adafruit_NeoPixel(1, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
+
+// WiFi Multi pour plusieurs r√©seaux
+WiFiMulti wifiMulti;
 
 // Managers
 PipBoyUI* ui;
@@ -87,8 +91,8 @@ void playBootSound() {
 // ========================================
 
 void setRGBLED(int r, int g, int b) {
-    // LED RGB ‡ GND commun (cathode commune)
-    // Logique inversÈe: LOW = allumÈ, HIGH = Èteint
+    // LED RGB - GND commun (cathode commune)
+    // Logique invers√©e: LOW = allum√©, HIGH = √©teint
     analogWrite(PIN_LED_RED, 255 - r);
     analogWrite(PIN_LED_GREEN, 255 - g);
     analogWrite(PIN_LED_BLUE, 255 - b);
@@ -150,10 +154,13 @@ void initWiFi() {
     tft.print("Connecting to WiFi...");
 
     WiFi.mode(WIFI_STA);
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+    // Ajouter tous les r√©seaux disponibles
+    wifiMulti.addAP(WIFI_SSID1, WIFI_PASS1);
+    wifiMulti.addAP(WIFI_SSID2, WIFI_PASS2);
 
     int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    while (wifiMulti.run() != WL_CONNECTED && attempts < 20) {
         delay(500);
         Serial.print(".");
         tft.print(".");
@@ -162,6 +169,8 @@ void initWiFi() {
 
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("\n[WiFi] Connected!");
+        Serial.print("[WiFi] SSID: ");
+        Serial.println(WiFi.SSID());
         Serial.print("[WiFi] IP: ");
         Serial.println(WiFi.localIP());
 
@@ -200,7 +209,7 @@ void setup() {
     pinMode(PIN_LED_BLUE, OUTPUT);
     pinMode(PIN_BUZZER, OUTPUT);
 
-    // LED de dÈmarrage
+    // LED de d√©marrage
     ledOrange();
 
     // Initialiser NeoPixel
@@ -208,16 +217,16 @@ void setup() {
     neopixel.setBrightness(50);
     setNeoPixel(50, 25, 0);
 
-    // Initialiser l'Ècran TFT
+    // Initialiser l'√©cran TFT
     Serial.println("[DISPLAY] Initializing TFT...");
     tft.init(240, 240, SPI_MODE2);
-    tft.setRotation(2);  // Orientation spÈcifiÈe
+    tft.setRotation(2);  // Orientation sp√©cifi√©e
     tft.fillScreen(PIPBOY_BLACK);
 
-    // Son de dÈmarrage
+    // Son de d√©marrage
     playBootSound();
 
-    // CrÈer l'interface Pip-Boy
+    // Cr√©er l'interface Pip-Boy
     ui = new PipBoyUI(&tft);
     ui->begin();
 
@@ -241,10 +250,10 @@ void setup() {
     buttons = new ButtonHandler(PIN_BUTTON_1, PIN_BUTTON_2, PIN_BUTTON_BOOT);
     buttons->begin();
 
-    // CrÈer le systËme de menu
+    // Cr√©er le syst√®me de menu
     menu = new MenuSystem(ui, sensors);
 
-    // Dessiner l'Ècran initial
+    // Dessiner l'√©cran initial
     menu->redraw();
 
     // LED verte pour indiquer que tout est OK
@@ -261,13 +270,13 @@ void setup() {
 // ========================================
 
 void loop() {
-    // Mettre ‡ jour les boutons
+    // Mettre √† jour les boutons
     buttons->update();
 
-    // Mettre ‡ jour les capteurs
+    // Mettre √† jour les capteurs
     sensors->update();
 
-    // Mettre ‡ jour les animations
+    // Mettre √† jour les animations
     menu->update();
 
     // Gestion des boutons
@@ -291,7 +300,7 @@ void loop() {
         playBeep(500, 100);
         ledRed();
 
-        // Retour ‡ l'Ècran STAT
+        // Retour √† l'√©cran STAT
         Serial.println("[SYSTEM] Reset to STAT screen");
         menu->previousScreen();
 
@@ -299,7 +308,7 @@ void loop() {
         ledGreen();
     }
 
-    // Appui long sur Button1 = redÈmarrer la sÈquence de boot
+    // Appui long sur Button1 = red√©marrer la s√©quence de boot
     if (buttons->button1LongPressed()) {
         Serial.println("[SYSTEM] Long press detected - Rebooting display...");
         playBootSound();
@@ -327,7 +336,7 @@ void loop() {
         ledGreen();
     }
 
-    // Effet LED pulsÈ si des alertes sont dÈtectÈes
+    // Effet LED puls√© si des alertes sont d√©tect√©es
     if (sensors->isTemperatureWarning() ||
         sensors->isHumidityWarning() ||
         sensors->isPressureWarning()) {
