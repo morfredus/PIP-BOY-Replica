@@ -1,3 +1,5 @@
+    // Accès direct à l'objet TFT (pour effacement global)
+    Adafruit_ST7789* getTFT() { return tft; }
 #ifndef PIPBOY_UI_H
 #define PIPBOY_UI_H
 

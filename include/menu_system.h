@@ -114,9 +114,9 @@ public:
         }
     }
 
-    // Forcer un redessin complet
+    // Forcer un redessin complet (effacement total pour éviter l'effet rideau)
     void redraw() {
-        ui->clearContent();
+        ui->getTFT()->fillScreen(PIPBOY_BLACK); // Efface tout l'écran
         draw();
     }
 

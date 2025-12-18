@@ -7,7 +7,12 @@ et ce projet adhère au [Versionnage Sémantique](https://semver.org/spec/v2.0.0
 
 
 
-## [1.3.3] - 2025-12-18
+
+## [1.3.4] - 2025-12-18
+
+### Corrigé
+- L'écran est désormais entièrement effacé à chaque changement de page pour éviter l'effet rideau et les artefacts visuels
+- Version patch incrémentée à 1.3.4
 
 ### Corrigé
 - Logique de gestion des boutons simplifiée et fiabilisée (appui court/long toujours détecté)

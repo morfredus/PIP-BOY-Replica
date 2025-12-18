@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [1.3.3] - 2025-12-18
+
+## [1.3.4] - 2025-12-18
+
+### Fixed
+- Full screen is now cleared on every page change to prevent visual artifacts and curtain effect
+- Patch version incremented to 1.3.4
 
 ### Fixed
 - Button handling logic reverted to a simple, reliable state (short/long press always detected)
