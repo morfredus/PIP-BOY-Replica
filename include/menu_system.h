@@ -1,8 +1,8 @@
 #ifndef MENU_SYSTEM_H
 #define MENU_SYSTEM_H
 
-#include "PipBoyUI.h"
-#include "SensorManager.h"
+#include "pipboy_ui.h"
+#include "sensor_manager.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>

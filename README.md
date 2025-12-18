@@ -2,7 +2,7 @@
 
 A fully functional Pip-Boy replica inspired by the Fallout game series, built with ESP32-S3 and featuring a retro-futuristic green monochrome interface.
 
-![Version](https://img.shields.io/badge/version-1.2.1-green.svg)
+![Version](https://img.shields.io/badge/version-1.3.0-green.svg)
 ![Platform](https://img.shields.io/badge/platform-ESP32--S3-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
 
@@ -361,7 +361,7 @@ This project is licensed under the MIT License - see LICENSE file for details.
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version: 1.2.1** - Configuration system with proper constant usage
+**Current Version: 1.3.0** - Code standards compliance and improved configuration
 
 ---
 

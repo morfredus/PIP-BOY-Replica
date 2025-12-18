@@ -52,8 +52,8 @@
 // Default location for weather data
 // Bordeaux, France
 #define WEATHER_LOCATION_NAME   "Bordeaux"
-#define WEATHER_LATITUDE        44.8378f
-#define WEATHER_LONGITUDE       -0.5792f
+#define WEATHER_LATITUDE        44.8378
+#define WEATHER_LONGITUDE       -0.5792
 #define WEATHER_TIMEZONE        "Europe/Paris"
 #define WEATHER_COUNTRY_CODE    "FR"
 
@@ -76,16 +76,20 @@
 // IMPORTANT: These values are ALWAYS in Celsius internally
 // If you use Fahrenheit display (TEMPERATURE_UNIT = 'F'),
 // the conversion will be done automatically for display only
-#define TEMP_WARNING_MIN        10.0f   // °C - Below this = warning (50°F)
-#define TEMP_WARNING_MAX        35.0f   // °C - Above this = warning (95°F)
+#define TEMP_WARNING_MIN        10.0    // °C - Below this = warning (50°F)
+#define TEMP_WARNING_MAX        35.0    // °C - Above this = warning (95°F)
 
 // Humidity warning thresholds (in percentage)
-#define HUMIDITY_WARNING_MIN    20.0f   // Below this = warning
-#define HUMIDITY_WARNING_MAX    80.0f   // Above this = warning
+#define HUMIDITY_WARNING_MIN    20.0    // Below this = warning
+#define HUMIDITY_WARNING_MAX    80.0    // Above this = warning
 
 // Pressure warning thresholds (in hPa)
-#define PRESSURE_WARNING_MIN    980.0f  // Below this = warning (storm)
-#define PRESSURE_WARNING_MAX    1040.0f // Above this = warning
+#define PRESSURE_WARNING_MIN    980.0   // Below this = warning (storm)
+#define PRESSURE_WARNING_MAX    1040.0  // Above this = warning
+
+// I2C sensor addresses
+#define BMP280_I2C_ADDRESS_PRIMARY    0x76  // Primary address (most common)
+#define BMP280_I2C_ADDRESS_SECONDARY  0x77  // Secondary address (alternative)
 
 // =========================================================
 // AUDIO CONFIGURATION

@@ -54,7 +54,7 @@ public:
         }
 
         // Initialiser BMP280
-        if (bmp.begin(0x76)) { // Adresse I2C par défaut 0x76, parfois 0x77
+        if (bmp.begin(BMP280_I2C_ADDRESS_PRIMARY)) {
             bmpInitialized = true;
 
             // Configuration BMP280
@@ -64,12 +64,17 @@ public:
                            Adafruit_BMP280::FILTER_X16,       // Filtering
                            Adafruit_BMP280::STANDBY_MS_500);  // Standby time
 
-            Serial.println("[SENSORS] BMP280 initialized successfully");
+            Serial.print("[SENSORS] BMP280 initialized successfully at 0x");
+            Serial.println(BMP280_I2C_ADDRESS_PRIMARY, HEX);
         } else {
-            Serial.println("[SENSORS] WARNING: BMP280 not found! Trying 0x77...");
-            if (bmp.begin(0x77)) {
+            Serial.print("[SENSORS] WARNING: BMP280 not found at 0x");
+            Serial.print(BMP280_I2C_ADDRESS_PRIMARY, HEX);
+            Serial.print("! Trying 0x");
+            Serial.println(BMP280_I2C_ADDRESS_SECONDARY, HEX);
+            if (bmp.begin(BMP280_I2C_ADDRESS_SECONDARY)) {
                 bmpInitialized = true;
-                Serial.println("[SENSORS] BMP280 found at 0x77");
+                Serial.print("[SENSORS] BMP280 found at 0x");
+                Serial.println(BMP280_I2C_ADDRESS_SECONDARY, HEX);
             }
         }
 

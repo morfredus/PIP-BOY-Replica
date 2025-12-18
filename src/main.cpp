@@ -33,10 +33,10 @@
 #include "board_config.h"
 #include "config.h"
 #include "secrets.h"
-#include "PipBoyUI.h"
-#include "SensorManager.h"
-#include "MenuSystem.h"
-#include "ButtonHandler.h"
+#include "pipboy_ui.h"
+#include "sensor_manager.h"
+#include "menu_system.h"
+#include "button_handler.h"
 
 // ========================================
 // Objets globaux

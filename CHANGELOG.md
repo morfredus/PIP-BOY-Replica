@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-12-18
+
+### Changed
+- **BREAKING**: All header files renamed to lowercase (snake_case) following C/C++ conventions
+  - `PipBoyUI.h` → `pipboy_ui.h`
+  - `SensorManager.h` → `sensor_manager.h`
+  - `MenuSystem.h` → `menu_system.h`
+  - `ButtonHandler.h` → `button_handler.h`
+- Removed `f` suffix from float constants in config.h for improved readability
+  - Temperature thresholds: `10.0f` → `10.0`, `35.0f` → `35.0`
+  - Humidity thresholds: `20.0f` → `20.0`, `80.0f` → `80.0`
+  - Pressure thresholds: `980.0f` → `980.0`, `1040.0f` → `1040.0`
+  - Weather coordinates: `44.8378f` → `44.8378`, `-0.5792f` → `-0.5792`
+- BMP280 I2C addresses now configurable in config.h instead of hardcoded
+- Improved serial logging for BMP280 initialization with hex address display
+
+### Added
+- Configuration constants for BMP280 I2C addresses in config.h
+  - `BMP280_I2C_ADDRESS_PRIMARY` (0x76)
+  - `BMP280_I2C_ADDRESS_SECONDARY` (0x77)
+
 ## [1.2.1] - 2025-12-18
 
 ### Fixed
