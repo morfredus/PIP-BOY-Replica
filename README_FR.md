@@ -2,8 +2,15 @@
 
 Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, construite avec ESP32-S3 et offrant une interface monochrome verte rétro-futuriste.
 
-# PATCH 1.4.3
-![Version](https://img.shields.io/badge/version-1.4.3-green.svg)
+# MINOR 1.5.0
+![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)
+## [1.5.0] - 2025-12-19
+
+- **NOUVEAU** : Support multi-écrans - option ST7789V 240x320 (écran IPS 2 pouces)
+- **NOUVEAU** : Support encodeur rotatif - module KY-040 comme alternative aux boutons
+- **NOUVEAU** : Support carte SD - définitions des pins pour module micro SD (audio/vidéo futur)
+- **NOUVEAU** : Documentation complète - guides matériels et mappings des pins (FR + EN)
+
 ## [1.4.3] - 2025-12-19
 
 - **Corrigé** : Durée des bips audio - réduction de toutes les durées de bip (clic: 50→20ms, sélection: 80→30ms, erreur: 200→40ms, boot: 150→50ms)

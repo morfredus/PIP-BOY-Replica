@@ -1,3 +1,21 @@
+## [1.5.0] - 2025-12-19
+
+### Added
+- **Multi-display support**: ST7789V 240x320 (2 inch IPS) display support
+- **Rotary encoder support**: KY-040 module as alternative to buttons
+- **SD Card support**: Pin definitions for micro SD card module (future audio/video)
+- **Comprehensive documentation**: Hardware guides, pin mappings (EN + FR)
+
+### Configuration
+- Display selection: `DISPLAY_ST7789_240x240` or `DISPLAY_ST7789V_240x320` in config.h
+- Input selection: `USE_BUTTONS` or `USE_ROTARY_ENCODER` in config.h
+- SD Card: `ENABLE_SD_CARD` in config.h (preparation for future features)
+
+### Documentation
+- NEW: docs/HARDWARE.md + docs/HARDWARE_FR.md
+- NEW: docs/PIN_MAPPING.md + docs/PIN_MAPPING_FR.md
+- Updated board_config.h with complete pin map summary
+
 ## [1.4.3] - 2025-12-19
 
 ### Fixed
