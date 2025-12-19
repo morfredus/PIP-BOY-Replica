@@ -1,21 +1,3 @@
-## [1.4.3] - 2025-12-19
-
-### Fixed
-- **Audio beeps duration**: Reduced all audio beep durations for more responsive feedback
-  - Click sound: 50ms → 20ms (brief)
-  - Select sound: 80ms → 30ms (brief)
-  - Error sound: 200ms → 40ms (brief)
-  - Boot sound: 150ms → 50ms (slightly longer)
-- **Radar blips spinning**: Fixed radar blips that were rotating and filling the screen
-  - Blips now stay at FIXED positions (angles 45°, 120°, 220°)
-  - Only the sweep line rotates, not the blips
-  - Introduced constants BLIP1_ANGLE, BLIP2_ANGLE, BLIP3_ANGLE for fixed positions
-  - Radar now behaves like a real radar with stationary targets
-
-### Technical
-- Added static const members for fixed blip positions in MenuSystem class
-- Blips positions defined once and reused in both drawMapScreen() and update()
-
 ## [1.4.2] - 2025-12-19
 
 ### Fixed

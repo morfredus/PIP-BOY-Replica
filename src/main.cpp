@@ -101,19 +101,19 @@ void updateBuzzer() {
 }
 
 void playClickSound() {
-    playBeep(800, 20);  // Bip bref pour les clics
+    playBeep(800, 50);
 }
 
 void playSelectSound() {
-    playBeep(1200, 30);  // Bip bref pour les sélections
+    playBeep(1200, 80);
 }
 
 void playErrorSound() {
-    playBeep(400, 40);  // Bip bref pour les erreurs
+    playBeep(400, 200);
 }
 
 void playBootSound() {
-    playBeep(1000, 50);  // Bip légèrement plus long pour le boot
+    playBeep(1000, 150);
 }
 
 // ========================================

@@ -33,21 +33,6 @@ public:
     int radarSweepAngle;
     int previousRadarSweepAngle;  // Pour effacer l'ancienne ligne de sweep
 
-    // Positions FIXES des blips sur le radar (ne changent jamais)
-    static const int BLIP1_ANGLE = 45;
-    static const int BLIP1_DISTANCE = 30;
-    static const int BLIP2_ANGLE = 120;
-    static const int BLIP2_DISTANCE = 50;
-    static const int BLIP3_ANGLE = 220;
-    static const int BLIP3_DISTANCE = 65;
-
-    // Variables pour optimisation de l'affichage (éviter l'effet rideau)
-    float lastDisplayedTemp;
-    float lastDisplayedHumidity;
-    float lastDisplayedPressure;
-    float lastDisplayedAltitude;
-    int lastDisplayedLight;
-
     MenuSystem(PipBoyUI* pipboyUI, SensorManager* sensorManager);
     void nextScreen();
     void previousScreen();
@@ -224,11 +209,10 @@ inline void MenuSystem::update() {
         int sweepY = centerY + radius * sin(rad);
         ui->drawRadarSweepLine(centerX, centerY, sweepX, sweepY);
 
-        // Redessiner les blips à leurs positions FIXES (peuvent avoir été effacés par la ligne)
-        // Les blips ne bougent JAMAIS, seule la ligne de sweep tourne
-        ui->drawRadarBlip(centerX, centerY, BLIP1_DISTANCE, BLIP1_ANGLE, false);
-        ui->drawRadarBlip(centerX, centerY, BLIP2_DISTANCE, BLIP2_ANGLE, false);
-        ui->drawRadarBlip(centerX, centerY, BLIP3_DISTANCE, BLIP3_ANGLE, true);
+        // Redessiner les blips aux nouvelles positions
+        ui->drawRadarBlip(centerX, centerY, 30, (radarSweepAngle + 45) % 360, false);
+        ui->drawRadarBlip(centerX, centerY, 50, (radarSweepAngle + 120) % 360, false);
+        ui->drawRadarBlip(centerX, centerY, 65, (radarSweepAngle + 220) % 360, true);
 
         // Mémoriser l'angle actuel pour le prochain effacement
         previousRadarSweepAngle = radarSweepAngle;
@@ -296,10 +280,10 @@ inline void MenuSystem::drawMapScreen() {
     int sweepY = centerY + radius * sin(rad);
     ui->drawRadarSweepLine(centerX, centerY, sweepX, sweepY);
 
-    // Dessiner les blips à leurs positions FIXES (ne changent jamais)
-    ui->drawRadarBlip(centerX, centerY, BLIP1_DISTANCE, BLIP1_ANGLE, false);
-    ui->drawRadarBlip(centerX, centerY, BLIP2_DISTANCE, BLIP2_ANGLE, false);
-    ui->drawRadarBlip(centerX, centerY, BLIP3_DISTANCE, BLIP3_ANGLE, true);
+    // Dessiner les blips initiaux
+    ui->drawRadarBlip(centerX, centerY, 30, (radarSweepAngle + 45) % 360, false);
+    ui->drawRadarBlip(centerX, centerY, 50, (radarSweepAngle + 120) % 360, false);
+    ui->drawRadarBlip(centerX, centerY, 65, (radarSweepAngle + 220) % 360, true);
 
     // Afficher les coordonnées
     char coordBuffer[30];

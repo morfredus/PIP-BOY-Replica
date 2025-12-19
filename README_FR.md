@@ -2,14 +2,8 @@
 
 Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, construite avec ESP32-S3 et offrant une interface monochrome verte rétro-futuriste.
 
-# PATCH 1.4.3
-![Version](https://img.shields.io/badge/version-1.4.3-green.svg)
-## [1.4.3] - 2025-12-19
-
-- **Corrigé** : Durée des bips audio - réduction de toutes les durées de bip (clic: 50→20ms, sélection: 80→30ms, erreur: 200→40ms, boot: 150→50ms)
-- **Corrigé** : Blips du radar qui tournent - les blips restent à des positions FIXES (45°, 120°, 220°), seule la ligne de balayage tourne
-- **Amélioré** : Le radar se comporte comme un vrai radar avec des cibles stationnaires
-
+# PATCH 1.4.2
+![Version](https://img.shields.io/badge/version-1.4.2-green.svg)
 ## [1.4.2] - 2025-12-19
 
 - **Corrigé** : Buzzer fonctionnel - ajout de l'initialisation PWM manquante
