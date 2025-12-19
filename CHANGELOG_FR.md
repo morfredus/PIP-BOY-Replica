@@ -1,3 +1,21 @@
+## [1.4.3] - 2025-12-19
+
+### Corrigé
+- **Durée des bips audio** : Réduction de la durée de tous les bips audio pour un retour plus réactif
+  - Son de clic : 50ms → 20ms (bref)
+  - Son de sélection : 80ms → 30ms (bref)
+  - Son d'erreur : 200ms → 40ms (bref)
+  - Son de démarrage : 150ms → 50ms (légèrement plus long)
+- **Blips du radar qui tournent** : Correction des blips radar qui tournaient et remplissaient l'écran
+  - Les blips restent maintenant à des positions FIXES (angles 45°, 120°, 220°)
+  - Seule la ligne de balayage tourne, pas les blips
+  - Introduction des constantes BLIP1_ANGLE, BLIP2_ANGLE, BLIP3_ANGLE pour les positions fixes
+  - Le radar se comporte maintenant comme un vrai radar avec des cibles stationnaires
+
+### Technique
+- Ajout de membres static const pour les positions fixes des blips dans la classe MenuSystem
+- Positions des blips définies une seule fois et réutilisées dans drawMapScreen() et update()
+
 ## [1.4.2] - 2025-12-19
 
 ### Corrigé
