@@ -72,6 +72,11 @@ OneButton buttonBoot(PIN_BUTTON_BOOT, true);
 // ========================================
 
 void playBeep(int frequency, int duration) {
+    Serial.print("[DEBUG] playBeep freq: ");
+    Serial.print(frequency);
+    Serial.print(" Hz, dur: ");
+    Serial.print(duration);
+    Serial.println(" ms");
     ledcWriteTone(BUZZER_PWM_CHANNEL, frequency);
     ledcWrite(BUZZER_PWM_CHANNEL, 128); // 50% duty
     delay(duration);
@@ -287,6 +292,7 @@ void setup() {
     // Initialiser les boutons avec OneButton
     Serial.println("[BUTTONS] Initializing OneButton...");
     button1.attachClick([](){
+        Serial.println("[BTN1] Click détecté");
         playClickSound();
         ledOrange();
         menu->nextScreen();
@@ -294,6 +300,7 @@ void setup() {
         ledGreen();
     });
     button2.attachClick([](){
+        Serial.println("[BTN2] Click détecté");
         playSelectSound();
         ledOrange();
         menu->actionButton();
@@ -301,6 +308,7 @@ void setup() {
         ledGreen();
     });
     buttonBoot.attachClick([](){
+        Serial.println("[BOOT] Click détecté");
         playBeep(500, 100);
         ledRed();
         Serial.println("[SYSTEM] Reset to STAT screen");
@@ -309,6 +317,7 @@ void setup() {
         ledGreen();
     });
     button1.attachLongPressStart([](){
+        Serial.println("[BTN1] Long press détecté");
         Serial.println("[SYSTEM] Long press detected - Rebooting display...");
         playBootSound();
         ui->begin();
@@ -316,6 +325,7 @@ void setup() {
         menu->redraw();
     });
     button2.attachLongPressStart([](){
+        Serial.println("[BTN2] Long press détecté");
         Serial.println("[SYSTEM] Long press detected - Reconnecting WiFi...");
         ledOrange();
         tft.fillScreen(PIPBOY_BLACK);
@@ -360,6 +370,28 @@ void loop() {
     button1.tick();
     button2.tick();
     buttonBoot.tick();
+
+    // DEBUG: Affichage de l'état des boutons sur le port série
+    static unsigned long lastButtonDebug = 0;
+    if (millis() - lastButtonDebug > 250) {
+        lastButtonDebug = millis();
+        Serial.print("BTN1: "); Serial.print(digitalRead(PIN_BUTTON_1));
+        Serial.print(" | BTN2: "); Serial.print(digitalRead(PIN_BUTTON_2));
+        Serial.print(" | BOOT: "); Serial.println(digitalRead(PIN_BUTTON_BOOT));
+    }
+
+    // DEBUG: Affichage de l'altitude et de la luminosité
+    static unsigned long lastDebug = 0;
+    if (millis() - lastDebug > 1000) {
+        lastDebug = millis();
+        Serial.print("[DEBUG] Altitude: ");
+        Serial.print(sensors->getAltitude());
+        Serial.print(" m | Lumière: ");
+        Serial.print(sensors->getLightLevel());
+        Serial.print(" (" );
+        Serial.print(sensors->getLightPercent());
+        Serial.println("%)");
+    }
 
     sensors->update();
     menu->update();

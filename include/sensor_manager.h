@@ -107,7 +107,7 @@ public:
                     temperature = bmp.readTemperature();
                 }
                 pressure = bmp.readPressure() / 100.0F; // Convertir en hPa
-                altitude = bmp.readAltitude(1013.25);   // Altitude standard
+                altitude = bmp.readAltitude(ALTITUDE_SEA_LEVEL_PRESSURE); // Utilise la pression de référence configurable
             }
 
             // Lire le capteur de lumière (ADC 0-4095 sur ESP32)
