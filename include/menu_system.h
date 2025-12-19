@@ -31,6 +31,30 @@ public:
     String radioMessages[5];
     int radioMessageCount;
     int radarSweepAngle;
+    int previousRadarSweepAngle;  // Pour effacer l'ancienne ligne de sweep
+
+    // Positions FIXES des blips sur le radar (ne changent jamais)
+    static const int BLIP1_ANGLE = 45;
+    static const int BLIP1_DISTANCE = 30;
+    static const int BLIP2_ANGLE = 120;
+    static const int BLIP2_DISTANCE = 50;
+    static const int BLIP3_ANGLE = 220;
+    static const int BLIP3_DISTANCE = 65;
+
+    // Variables pour optimisation de l'affichage (éviter l'effet rideau)
+    float lastDisplayedTemp;
+    float lastDisplayedHumidity;
+    float lastDisplayedPressure;
+    float lastDisplayedAltitude;
+    int lastDisplayedLight;
+
+    // Cache pour éviter le redessinage inutile
+    float cachedTemperature;
+    float cachedHumidity;
+    float cachedPressure;
+    float cachedAltitude;
+    int cachedLightPercent;
+    bool needsFullRedraw;
 
     MenuSystem(PipBoyUI* pipboyUI, SensorManager* sensorManager);
     void nextScreen();
@@ -38,6 +62,7 @@ public:
     void actionButton();
     void draw();
     void redraw();
+    void forceRedraw();
     void update();
     void updateSensorValues();
     void addRadioMessage(const char* message);
@@ -54,28 +79,39 @@ private:
 // --- Définition des méthodes inline ---
 
 inline void MenuSystem::draw() {
-    switch (currentScreen) {
-        case SCREEN_STAT:
-            drawStatScreen();
-            break;
-        case SCREEN_DATA:
-            drawDataScreen();
-            break;
-        case SCREEN_RADIO:
-            drawRadioScreen();
-            break;
-        case SCREEN_MAP:
-            drawMapScreen();
-            break;
+    if (needsFullRedraw) {
+        switch (currentScreen) {
+            case SCREEN_STAT:
+                drawStatScreen();
+                break;
+            case SCREEN_DATA:
+                drawDataScreen();
+                break;
+            case SCREEN_RADIO:
+                drawRadioScreen();
+                break;
+            case SCREEN_MAP:
+                drawMapScreen();
+                break;
+        }
+        needsFullRedraw = false;
     }
 }
 
 inline void MenuSystem::redraw() {
+    // Ne redessine que si nécessaire
+    if (needsFullRedraw) {
+        draw();
+    }
+}
+
+inline void MenuSystem::forceRedraw() {
+    // Force le redessin complet
+    needsFullRedraw = true;
     draw();
 }
-        void drawRadioScreen();
-    // --- Définition des méthodes API manquantes ---
-    inline MenuSystem::MenuSystem(PipBoyUI* pipboyUI, SensorManager* sensorManager) {
+
+inline MenuSystem::MenuSystem(PipBoyUI* pipboyUI, SensorManager* sensorManager) {
         ui = pipboyUI;
         sensors = sensorManager;
         currentScreen = SCREEN_STAT;
@@ -86,47 +122,62 @@ inline void MenuSystem::redraw() {
         weatherDataAvailable = false;
         radioMessageCount = 0;
         radarSweepAngle = 0;
+
+        // Initialiser le cache avec des valeurs impossibles pour forcer le premier affichage
+        cachedTemperature = -999.0f;
+        cachedHumidity = -999.0f;
+        cachedPressure = -999.0f;
+        cachedAltitude = -999.0f;
+        cachedLightPercent = -1;
+        needsFullRedraw = true;
+
         addRadioMessage("RobCo Ind. System Boot");
         addRadioMessage("All systems nominal");
         addRadioMessage("Vault-Tec calling...");
     }
 
-    inline void MenuSystem::nextScreen() {
-        ui->getTFT()->fillScreen(PIPBOY_BLACK);
-        currentScreen = (MenuScreen)((currentScreen + 1) % SCREEN_COUNT);
-        subMenuIndex = 0;
-        redraw();
-    }
+inline void MenuSystem::nextScreen() {
+    ui->getTFT()->fillScreen(PIPBOY_BLACK);
+    currentScreen = (MenuScreen)((currentScreen + 1) % SCREEN_COUNT);
+    subMenuIndex = 0;
+    needsFullRedraw = true;
+    redraw();
+}
 
-    inline void MenuSystem::previousScreen() {
-        ui->getTFT()->fillScreen(PIPBOY_BLACK);
-        currentScreen = (MenuScreen)((currentScreen - 1 + SCREEN_COUNT) % SCREEN_COUNT);
-        subMenuIndex = 0;
-        redraw();
-    }
+inline void MenuSystem::previousScreen() {
+    ui->getTFT()->fillScreen(PIPBOY_BLACK);
+    currentScreen = (MenuScreen)((currentScreen - 1 + SCREEN_COUNT) % SCREEN_COUNT);
+    subMenuIndex = 0;
+    needsFullRedraw = true;
+    redraw();
+}
 
-    inline void MenuSystem::actionButton() {
-        // Efface l'écran uniquement si on change de menu
-        bool needClear = false;
-        switch (currentScreen) {
-            case SCREEN_STAT:
-                sensors->update();
-                break;
-            case SCREEN_DATA:
-                fetchWeatherData();
-                break;
-            case SCREEN_RADIO:
-                needClear = true;
-                subMenuIndex = (subMenuIndex + 1) % radioMessageCount;
-                break;
-            case SCREEN_MAP:
-                needClear = true;
-                radarSweepAngle = 0;
-                break;
-        }
-        if (needClear) ui->getTFT()->fillScreen(PIPBOY_BLACK);
-        redraw();
+inline void MenuSystem::actionButton() {
+    // Efface l'écran uniquement si on change de menu
+    bool needClear = false;
+    switch (currentScreen) {
+        case SCREEN_STAT:
+            sensors->update();
+            needsFullRedraw = true;
+            break;
+        case SCREEN_DATA:
+            fetchWeatherData();
+            needsFullRedraw = true;
+            break;
+        case SCREEN_RADIO:
+            needClear = true;
+            subMenuIndex = (subMenuIndex + 1) % radioMessageCount;
+            needsFullRedraw = true;
+            break;
+        case SCREEN_MAP:
+            needClear = true;
+            radarSweepAngle = 0;
+            needsFullRedraw = true;
+            break;
     }
+    if (needClear) ui->getTFT()->fillScreen(PIPBOY_BLACK);
+    redraw();
+}
 
     inline void MenuSystem::drawRadioScreen() {
         ui->drawHeader("RADIO");
@@ -150,10 +201,24 @@ inline void MenuSystem::redraw() {
     }
 inline void MenuSystem::update() {
     unsigned long currentTime = millis();
-    if (currentScreen == SCREEN_MAP && currentTime - animationTimer > 100) {
+    if (currentScreen == SCREEN_MAP && currentTime - animationTimer > 50) {
         animationTimer = currentTime;
         animationFrame++;
+
+        // Paramètres du radar (doivent correspondre à drawMapScreen)
+        int centerX = 120;
+        int centerY = 130;
+        int radius = 70;
+
+        // Effacer l'ancienne ligne de sweep en la redessinant en noir
+        float prevRad = previousRadarSweepAngle * 3.14159 / 180.0;
+        int prevSweepX = centerX + radius * cos(prevRad);
+        int prevSweepY = centerY + radius * sin(prevRad);
+        ui->getTFT()->drawLine(centerX, centerY, prevSweepX, prevSweepY, PIPBOY_BLACK);
+
+        // Calculer le nouvel angle
         radarSweepAngle = (radarSweepAngle + 5) % 360;
+        needsFullRedraw = true;
         redraw();
     }
 }
@@ -200,27 +265,41 @@ inline void MenuSystem::drawDataScreen() {
 }
 
 inline void MenuSystem::drawMapScreen() {
-    // ui->getTFT()->fillScreen(PIPBOY_BLACK); // SUPPRIMÉ
+    // Dessiner l'écran initial (header, tabs, footer, radar)
     ui->drawHeader("MAP");
     ui->clearContent();
     drawTabs();
+
+    // Paramètres du radar ajustés pour ne pas déborder sur le footer
     int centerX = 120;
-    int centerY = 140;
-    int radius = 80;
+    int centerY = 130;  // Ajusté de 140 à 130
+    int radius = 70;     // Ajusté de 80 à 70
+
+    // Dessiner le radar statique
     ui->drawRadar(centerX, centerY, radius);
+
+    // Dessiner la ligne de sweep initiale
     float rad = radarSweepAngle * 3.14159 / 180.0;
     int sweepX = centerX + radius * cos(rad);
     int sweepY = centerY + radius * sin(rad);
     ui->drawRadarSweepLine(centerX, centerY, sweepX, sweepY);
-    ui->drawRadarBlip(centerX, centerY, 30, (radarSweepAngle + 45) % 360, false);
-    ui->drawRadarBlip(centerX, centerY, 50, (radarSweepAngle + 120) % 360, false);
-    ui->drawRadarBlip(centerX, centerY, 65, (radarSweepAngle + 220) % 360, true);
+
+    // Dessiner les blips à leurs positions FIXES (ne changent jamais)
+    ui->drawRadarBlip(centerX, centerY, BLIP1_DISTANCE, BLIP1_ANGLE, false);
+    ui->drawRadarBlip(centerX, centerY, BLIP2_DISTANCE, BLIP2_ANGLE, false);
+    ui->drawRadarBlip(centerX, centerY, BLIP3_DISTANCE, BLIP3_ANGLE, true);
+
+    // Afficher les coordonnées
     char coordBuffer[30];
     snprintf(coordBuffer, sizeof(coordBuffer), "N:%d E:%d",
              (int)(sensors->getAltitude() + 1000),
              (int)(sensors->getPressure()));
     ui->drawStatLine(60, "COORD", coordBuffer, false);
+
     ui->drawFooter("NEXT", "SCAN");
+
+    // Mémoriser l'angle initial
+    previousRadarSweepAngle = radarSweepAngle;
 }
 
 inline void MenuSystem::drawTabs() {
@@ -270,24 +349,57 @@ inline void MenuSystem::fetchWeatherData() {
 }
 inline void MenuSystem::updateSensorValues() {
     if (currentScreen != SCREEN_STAT) return;
+
+    // Récupérer les valeurs actuelles
+    float currentTemp = sensors->getTemperature();
+    float currentHumidity = sensors->getHumidity();
+    float currentPressure = sensors->getPressure();
+    float currentAltitude = sensors->getAltitude();
+    int currentLightPercent = sensors->getLightPercent();
+
+    // Vérifier si au moins une valeur a changé (avec un seuil de tolérance)
+    bool hasChanged = (abs(currentTemp - cachedTemperature) > 0.1f) ||
+                      (abs(currentHumidity - cachedHumidity) > 0.5f) ||
+                      (abs(currentPressure - cachedPressure) > 0.5f) ||
+                      (abs(currentAltitude - cachedAltitude) > 0.5f) ||
+                      (currentLightPercent != cachedLightPercent);
+
+    // Ne redessiner que si une valeur a changé
+    if (!hasChanged && cachedTemperature != -999.0f) {
+        return;
+    }
+
+    // Mettre à jour le cache
+    cachedTemperature = currentTemp;
+    cachedHumidity = currentHumidity;
+    cachedPressure = currentPressure;
+    cachedAltitude = currentAltitude;
+    cachedLightPercent = currentLightPercent;
+
+    // Effacer uniquement la zone de contenu (pas l'en-tête ni le pied de page)
+    ui->clearContent();
+
+    // Redessiner les onglets
+    drawTabs();
+
+    // Redessiner les valeurs
     int y = 60;
-    String tempStr = String(sensors->getTemperature(), 1) + " C";
+    String tempStr = String(currentTemp, 1) + " C";
     ui->drawStatLine(y, "TEMP", tempStr.c_str(), sensors->isTemperatureWarning());
     y += 15;
-    String humidityStr = String(sensors->getHumidity(), 0) + " %";
+    String humidityStr = String(currentHumidity, 0) + " %";
     ui->drawStatLine(y, "HUMIDITY", humidityStr.c_str(), sensors->isHumidityWarning());
     y += 15;
-    String pressureStr = String(sensors->getPressure(), 0) + " hPa";
+    String pressureStr = String(currentPressure, 0) + " hPa";
     ui->drawStatLine(y, "PRESSURE", pressureStr.c_str(), sensors->isPressureWarning());
     y += 15;
-    String altitudeStr = String(sensors->getAltitude(), 0) + " m";
+    String altitudeStr = String(currentAltitude, 0) + " m";
     ui->drawStatLine(y, "ALTITUDE", altitudeStr.c_str(), false);
     y += 20;
-    int lightPercent = sensors->getLightPercent();
-    String lightStr = String(lightPercent) + " %";
+    String lightStr = String(currentLightPercent) + " %";
     ui->drawStatLine(y, "LIGHT", lightStr.c_str(), false);
     y += 12;
-    ui->drawProgressBar(10, y, 220, 10, lightPercent);
+    ui->drawProgressBar(10, y, 220, 10, currentLightPercent);
     y += 25;
     char statusBuffer[50];
     sensors->getStatusString(statusBuffer, sizeof(statusBuffer));

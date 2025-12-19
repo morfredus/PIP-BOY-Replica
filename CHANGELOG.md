@@ -1,3 +1,28 @@
+## [1.5.0] - 2025-12-19
+
+### Added
+- Double-click support on Button 1 to force screen refresh
+- OneButton timing configuration (setClickTicks, setPressTicks) for reliable button detection
+- Sensor value caching system to prevent unnecessary screen redraws
+- New `forceRedraw()` method in MenuSystem for explicit full screen redraw
+
+### Fixed
+- Removed all `delay()` calls from OneButton callbacks to prevent event detection blocking
+- Screen flickering and curtain effect eliminated through smart partial updates
+- Button events (click, double-click, long press) now reliably detected without conflicts
+
+### Changed
+- Display optimization: `redraw()` only called when screen content actually changes
+- Sensor values only redrawn when they change beyond threshold (temperature ±0.1°C, humidity ±0.5%, etc.)
+- Header and footer remain static during sensor value updates (no more full screen refresh)
+- Reduced sensor update interval in loop from 200ms to 500ms for better performance
+- Button debug output interval increased from 250ms to 1000ms to reduce serial spam
+
+### Performance
+- Dramatically reduced screen update frequency
+- Eliminated redundant draw calls in main loop
+- Smart caching prevents unnecessary TFT operations
+
 ## [1.4.0] - 2025-12-19
 
 ### Added
@@ -11,10 +36,6 @@
 ### Added
 - Serial debug output for altitude, light sensor (raw and percent), and all playBeep() calls to help diagnose hardware and sensor issues (diagnostic patch).
 #
-## [1.3.8] - 2025-12-19
-
-### Added
-- Serial debug output for button states in loop() to help diagnose hardware/software issues with OneButton (diagnostic patch).
 ## [1.3.7] - 2025-12-19
 
 ### Fixed
