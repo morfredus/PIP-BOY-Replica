@@ -168,6 +168,23 @@ public:
         tft->print(value);
     }
 
+    // Mettre à jour une ligne de stat (efface l'ancienne valeur avant de redessiner)
+    void updateStatLine(int y, const char* label, const char* value, bool warning = false) {
+        // Effacer uniquement la zone de la valeur (après le label)
+        // Calculer la position X du début de la valeur
+        tft->setTextSize(1);
+        int16_t x1, y1;
+        uint16_t w, h;
+        tft->getTextBounds(label, 0, 0, &x1, &y1, &w, &h);
+        int valueX = 10 + w + 12;  // 10 (cursor) + largeur label + ": " (12 pixels)
+
+        // Effacer la zone de la valeur (largeur max estimée : 100 pixels)
+        tft->fillRect(valueX, y, 100, 8, PIPBOY_BLACK);
+
+        // Redessiner la ligne complète
+        drawStatLine(y, label, value, warning);
+    }
+
     // Dessiner une barre de progression
     void drawProgressBar(int x, int y, int w, int h, int percent) {
         // Bordure

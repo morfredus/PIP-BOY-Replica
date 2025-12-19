@@ -2,7 +2,16 @@
 
 Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, construite avec ESP32-S3 et offrant une interface monochrome verte rétro-futuriste.
 
-![Version](https://img.shields.io/badge/version-1.5.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.5.1-green.svg)
+
+## [1.5.1] - 2025-12-19
+
+### Améliorations des performances
+- **Radar MAP ultra-fluide** : La ligne de balayage s'anime à 33 FPS sans redessiner les éléments statiques
+- **Mises à jour STATS intelligentes** : Seules les valeurs de capteurs modifiées sont redessinées (plus d'effet rideau)
+- **RADIO optimisée** : La sélection des messages met à jour uniquement la zone des messages
+- **Buzzer réactif** : Audio non-bloquant corrigé avec des bips très courts (20-50ms)
+- **Taux de rafraîchissement plus rapide** : La boucle principale s'exécute à des intervalles de 5ms pour une réactivité maximale
 
 ## [1.5.0] - 2025-12-19
 

@@ -1,3 +1,28 @@
+## [1.5.1] - 2025-12-19
+
+### Fixed
+- Buzzer now works correctly with non-blocking `updateBuzzer()` called in main loop
+- All beep durations reduced to short bursts (20-50ms) for better responsiveness
+- STATS page: Only changed sensor values are redrawn (eliminates curtain effect)
+- RADIO page: Only message area is updated when changing selection (no full screen refresh)
+- MAP page: Only sweep line moves, radar and blips remain static (smooth animation)
+- MAP coordinates moved above radar circle to prevent overlap
+
+### Changed
+- Radar sweep animation interval: 50ms → 30ms (smoother)
+- Radar sweep angle increment: 5° → 3° (more fluid)
+- Main loop delay: 10ms → 5ms (more responsive)
+- Sensor update interval: 500ms → 200ms (faster updates)
+- WiFi connection beep simplified to single short tone
+- Boot beep duration: 200ms → 50ms
+
+### Performance
+- Dramatically improved display responsiveness across all pages
+- Eliminated all full-screen redraws during normal operation
+- MAP page radar sweep now runs at 33 FPS (vs previous ~10 FPS with full redraw)
+- STATS page updates individual lines only when values change
+- RADIO page updates only message area (not header/footer)
+
 ## [1.5.0] - 2025-12-19
 
 ### Added

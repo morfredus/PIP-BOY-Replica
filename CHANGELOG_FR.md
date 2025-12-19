@@ -1,3 +1,28 @@
+## [1.5.1] - 2025-12-19
+
+### Corrigé
+- Le buzzer fonctionne maintenant correctement avec `updateBuzzer()` non-bloquant appelé dans la boucle principale
+- Toutes les durées de bip réduites à de courts signaux (20-50ms) pour une meilleure réactivité
+- Page STATS : Seules les valeurs de capteurs modifiées sont redessinées (élimine l'effet rideau)
+- Page RADIO : Seule la zone des messages est mise à jour lors du changement de sélection (pas de rafraîchissement complet)
+- Page MAP : Seule la ligne de balayage bouge, le radar et les blips restent statiques (animation fluide)
+- Coordonnées MAP déplacées au-dessus du cercle radar pour éviter le chevauchement
+
+### Modifié
+- Intervalle d'animation du balayage radar : 50ms → 30ms (plus fluide)
+- Incrément d'angle du balayage radar : 5° → 3° (plus fluide)
+- Délai de la boucle principale : 10ms → 5ms (plus réactif)
+- Intervalle de mise à jour des capteurs : 500ms → 200ms (mises à jour plus rapides)
+- Bip de connexion WiFi simplifié en un seul ton court
+- Durée du bip de démarrage : 200ms → 50ms
+
+### Performance
+- Amélioration spectaculaire de la réactivité de l'affichage sur toutes les pages
+- Élimination de tous les redessins complets d'écran durant le fonctionnement normal
+- Le balayage radar de la page MAP fonctionne maintenant à 33 FPS (vs ~10 FPS avec redessin complet)
+- La page STATS met à jour les lignes individuellement uniquement quand les valeurs changent
+- La page RADIO met à jour uniquement la zone des messages (pas l'en-tête/pied de page)
+
 ## [1.5.0] - 2025-12-19
 
 ### Ajouté
