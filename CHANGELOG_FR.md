@@ -1,4 +1,41 @@
+## [1.4.1] - 2025-12-19
+
+### Corrigé
+- **Détection des boutons** : Suppression de tous les appels bloquants `delay()` dans les callbacks OneButton, qui empêchaient la détection correcte des événements
+  - Tous les callbacks de boutons s'exécutent maintenant sans bloquer la boucle principale
+  - Amélioration de la réactivité et de la fiabilité des boutons
+  - Correction du problème où les clics des boutons 2 et Boot n'étaient pas correctement détectés
+
+### Optimisé
+- **Performance d'affichage** : Élimination de l'effet rideau lors des mises à jour d'écran
+  - Suppression de l'appel continu à `menu->redraw()` dans loop() (redessinage complet de l'écran ~100 fois par seconde)
+  - Implémentation d'une logique de mise à jour intelligente : redessinage des valeurs capteurs uniquement lors de changements significatifs (>0.1°C pour temp, >0.5% pour humidité, etc.)
+  - `drawStatLine()` n'efface et ne redessine maintenant que la zone de valeur, pas le label
+  - Réduction de la fréquence de mise à jour des capteurs de 200ms à 500ms pour de meilleures performances
+  - Ajout d'un suivi d'état pour éviter les redessins inutiles
+
+### Modifié
+- Retour LED simplifié dans les gestionnaires de boutons (suppression des delays)
+- Réduction du délai de la boucle principale de 10ms à 5ms pour une meilleure réactivité des boutons
+- Amélioration de la gestion des LEDs d'alerte avec suivi d'état
+
+## [1.4.0] - 2025-12-19
+
+### Ajouté
+- La pression de référence pour l'altitude (ALTITUDE_SEA_LEVEL_PRESSURE) est maintenant configurable dans config.h pour un affichage correct de l'altitude. À régler selon la pression locale (hPa).
+## [1.3.10] - 2025-12-19
+
+### Ajouté
+- Serial.println dans tous les callbacks OneButton (click/long press) pour afficher les événements boutons dans le moniteur série et faciliter le debug.
+## [1.3.9] - 2025-12-19
+
+### Ajouté
+- Affichage série de l'altitude, du capteur de lumière (brut et %) et de tous les appels à playBeep() pour faciliter le diagnostic matériel et capteurs (patch diagnostic).
 #
+## [1.3.8] - 2025-12-19
+
+### Ajouté
+- Affichage série de l'état des boutons dans loop() pour faciliter le diagnostic matériel/logiciel avec OneButton (patch diagnostic).
 ## [1.3.7] - 2025-12-19
 
 ### Corrigé

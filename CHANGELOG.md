@@ -1,4 +1,41 @@
+## [1.4.1] - 2025-12-19
+
+### Fixed
+- **Button detection**: Removed all blocking `delay()` calls from OneButton callbacks, which were preventing proper event detection
+  - All button callbacks now execute without blocking the main loop
+  - Improved button responsiveness and reliability
+  - Fixed issue where button2 and buttonBoot clicks were not properly detected
+
+### Optimized
+- **Display performance**: Eliminated curtain effect on screen updates
+  - Removed continuous `menu->redraw()` call in loop() (was redrawing entire screen ~100 times per second)
+  - Implemented smart update logic: only redraw sensor values when they change significantly (>0.1°C for temp, >0.5% for humidity, etc.)
+  - `drawStatLine()` now only erases and redraws the value area, not the label
+  - Reduced sensor update frequency from 200ms to 500ms for better performance
+  - Added state tracking to prevent unnecessary redraws
+
+### Changed
+- LED feedback simplified in button handlers (removed delays)
+- Reduced main loop delay from 10ms to 5ms for better button responsiveness
+- Improved warning LED handling with state tracking
+
+## [1.4.0] - 2025-12-19
+
+### Added
+- Altitude reference pressure (ALTITUDE_SEA_LEVEL_PRESSURE) is now configurable in config.h for correct altitude display. Set to your local sea level pressure (hPa).
+## [1.3.10] - 2025-12-19
+
+### Added
+- Serial.println in all OneButton callbacks (click/long press) to display button events in the serial monitor for easier debugging.
+## [1.3.9] - 2025-12-19
+
+### Added
+- Serial debug output for altitude, light sensor (raw and percent), and all playBeep() calls to help diagnose hardware and sensor issues (diagnostic patch).
 #
+## [1.3.8] - 2025-12-19
+
+### Added
+- Serial debug output for button states in loop() to help diagnose hardware/software issues with OneButton (diagnostic patch).
 ## [1.3.7] - 2025-12-19
 
 ### Fixed
