@@ -2,11 +2,14 @@
 
 Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, construite avec ESP32-S3 et offrant une interface monochrome verte rétro-futuriste.
 
-# PATCH 1.3.8
-# PATCH 1.3.9
-# PATCH 1.3.10
-# MINEUR 1.4.0
-![Version](https://img.shields.io/badge/version-1.4.0-green.svg)
+# PATCH 1.4.1
+![Version](https://img.shields.io/badge/version-1.4.1-green.svg)
+## [1.4.1] - 2025-12-19
+
+- **Corrigé** : Problèmes de détection des boutons - suppression de tous les appels `delay()` bloquants dans les callbacks OneButton
+- **Optimisé** : Élimination de l'effet rideau sur l'affichage - logique de redessinage intelligente qui ne met à jour que les valeurs modifiées
+- **Performance** : Réduction de la fréquence de mise à jour des capteurs (200ms → 500ms) et du délai de la boucle principale (10ms → 5ms)
+
 ## [1.4.0] - 2025-12-19
 
 - La pression de référence pour l'altitude (ALTITUDE_SEA_LEVEL_PRESSURE) est maintenant configurable dans config.h pour un affichage correct de l'altitude. À régler selon la pression locale (hPa).

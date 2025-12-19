@@ -1,3 +1,24 @@
+## [1.4.1] - 2025-12-19
+
+### Fixed
+- **Button detection**: Removed all blocking `delay()` calls from OneButton callbacks, which were preventing proper event detection
+  - All button callbacks now execute without blocking the main loop
+  - Improved button responsiveness and reliability
+  - Fixed issue where button2 and buttonBoot clicks were not properly detected
+
+### Optimized
+- **Display performance**: Eliminated curtain effect on screen updates
+  - Removed continuous `menu->redraw()` call in loop() (was redrawing entire screen ~100 times per second)
+  - Implemented smart update logic: only redraw sensor values when they change significantly (>0.1°C for temp, >0.5% for humidity, etc.)
+  - `drawStatLine()` now only erases and redraws the value area, not the label
+  - Reduced sensor update frequency from 200ms to 500ms for better performance
+  - Added state tracking to prevent unnecessary redraws
+
+### Changed
+- LED feedback simplified in button handlers (removed delays)
+- Reduced main loop delay from 10ms to 5ms for better button responsiveness
+- Improved warning LED handling with state tracking
+
 ## [1.4.0] - 2025-12-19
 
 ### Added
