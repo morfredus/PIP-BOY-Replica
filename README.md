@@ -28,11 +28,6 @@ A fully functional Pip-Boy replica inspired by the Fallout game series, built wi
 
 - Serial debug output for altitude, light sensor (raw and percent), and all playBeep() calls to help diagnose hardware and sensor issues (diagnostic patch).
 #
-
-## [1.3.8] - 2025-12-19
-
-- Serial debug output for button states in loop() to help diagnose hardware/software issues with OneButton (diagnostic patch).
-
 ## [1.3.7] - 2025-12-19
 
 - Suppression de tous les doublons d’objets globaux, code principal nettoyé, compilation garantie.

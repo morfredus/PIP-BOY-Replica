@@ -33,13 +33,6 @@ public:
     int radarSweepAngle;
     int previousRadarSweepAngle;  // Pour effacer l'ancienne ligne de sweep
 
-    // Variables pour optimisation de l'affichage (éviter l'effet rideau)
-    float lastDisplayedTemp;
-    float lastDisplayedHumidity;
-    float lastDisplayedPressure;
-    float lastDisplayedAltitude;
-    int lastDisplayedLight;
-
     MenuSystem(PipBoyUI* pipboyUI, SensorManager* sensorManager);
     void nextScreen();
     void previousScreen();
@@ -352,61 +345,25 @@ inline void MenuSystem::fetchWeatherData() {
 }
 inline void MenuSystem::updateSensorValues() {
     if (currentScreen != SCREEN_STAT) return;
-
-    // Lire les valeurs actuelles des capteurs
-    float currentTemp = sensors->getTemperature();
-    float currentHumidity = sensors->getHumidity();
-    float currentPressure = sensors->getPressure();
-    float currentAltitude = sensors->getAltitude();
-    int currentLight = sensors->getLightPercent();
-
     int y = 60;
-
-    // Mettre à jour TEMP uniquement si changement significatif (> 0.1°C)
-    if (abs(currentTemp - lastDisplayedTemp) > 0.1) {
-        String tempStr = String(currentTemp, 1) + " C";
-        ui->drawStatLine(y, "TEMP", tempStr.c_str(), sensors->isTemperatureWarning());
-        lastDisplayedTemp = currentTemp;
-    }
+    String tempStr = String(sensors->getTemperature(), 1) + " C";
+    ui->drawStatLine(y, "TEMP", tempStr.c_str(), sensors->isTemperatureWarning());
     y += 15;
-
-    // Mettre à jour HUMIDITY uniquement si changement significatif (> 0.5%)
-    if (abs(currentHumidity - lastDisplayedHumidity) > 0.5) {
-        String humidityStr = String(currentHumidity, 0) + " %";
-        ui->drawStatLine(y, "HUMIDITY", humidityStr.c_str(), sensors->isHumidityWarning());
-        lastDisplayedHumidity = currentHumidity;
-    }
+    String humidityStr = String(sensors->getHumidity(), 0) + " %";
+    ui->drawStatLine(y, "HUMIDITY", humidityStr.c_str(), sensors->isHumidityWarning());
     y += 15;
-
-    // Mettre à jour PRESSURE uniquement si changement significatif (> 0.5 hPa)
-    if (abs(currentPressure - lastDisplayedPressure) > 0.5) {
-        String pressureStr = String(currentPressure, 0) + " hPa";
-        ui->drawStatLine(y, "PRESSURE", pressureStr.c_str(), sensors->isPressureWarning());
-        lastDisplayedPressure = currentPressure;
-    }
+    String pressureStr = String(sensors->getPressure(), 0) + " hPa";
+    ui->drawStatLine(y, "PRESSURE", pressureStr.c_str(), sensors->isPressureWarning());
     y += 15;
-
-    // Mettre à jour ALTITUDE uniquement si changement significatif (> 0.5 m)
-    if (abs(currentAltitude - lastDisplayedAltitude) > 0.5) {
-        String altitudeStr = String(currentAltitude, 0) + " m";
-        ui->drawStatLine(y, "ALTITUDE", altitudeStr.c_str(), false);
-        lastDisplayedAltitude = currentAltitude;
-    }
+    String altitudeStr = String(sensors->getAltitude(), 0) + " m";
+    ui->drawStatLine(y, "ALTITUDE", altitudeStr.c_str(), false);
     y += 20;
-
-    // Mettre à jour LIGHT uniquement si changement significatif (> 1%)
-    if (abs(currentLight - lastDisplayedLight) > 1) {
-        String lightStr = String(currentLight) + " %";
-        ui->drawStatLine(y, "LIGHT", lightStr.c_str(), false);
-        y += 12;
-        ui->drawProgressBar(10, y, 220, 10, currentLight);
-        lastDisplayedLight = currentLight;
-    } else {
-        y += 12;
-    }
-    y += 13;
-
-    // Status toujours affiché (peut changer selon l'état des capteurs)
+    int lightPercent = sensors->getLightPercent();
+    String lightStr = String(lightPercent) + " %";
+    ui->drawStatLine(y, "LIGHT", lightStr.c_str(), false);
+    y += 12;
+    ui->drawProgressBar(10, y, 220, 10, lightPercent);
+    y += 25;
     char statusBuffer[50];
     sensors->getStatusString(statusBuffer, sizeof(statusBuffer));
     ui->drawStatLine(y, "SENSORS", statusBuffer, !sensors->isAnyReady());
