@@ -1,3 +1,78 @@
+## [1.4.3] - 2025-12-19
+
+### Corrigé
+- **Durée des bips audio** : Réduction de la durée de tous les bips audio pour un retour plus réactif
+  - Son de clic : 50ms → 20ms (bref)
+  - Son de sélection : 80ms → 30ms (bref)
+  - Son d'erreur : 200ms → 40ms (bref)
+  - Son de démarrage : 150ms → 50ms (légèrement plus long)
+- **Blips du radar qui tournent** : Correction des blips radar qui tournaient et remplissaient l'écran
+  - Les blips restent maintenant à des positions FIXES (angles 45°, 120°, 220°)
+  - Seule la ligne de balayage tourne, pas les blips
+  - Introduction des constantes BLIP1_ANGLE, BLIP2_ANGLE, BLIP3_ANGLE pour les positions fixes
+  - Le radar se comporte maintenant comme un vrai radar avec des cibles stationnaires
+
+### Technique
+- Ajout de membres static const pour les positions fixes des blips dans la classe MenuSystem
+- Positions des blips définies une seule fois et réutilisées dans drawMapScreen() et update()
+
+## [1.4.2] - 2025-12-19
+
+### Corrigé
+- **Buzzer fonctionnel** : Ajout de l'initialisation PWM manquante (`ledcSetup()` et `ledcAttachPin()`) dans setup()
+  - Le buzzer était silencieux car le canal PWM n'était jamais configuré
+  - Tous les effets sonores fonctionnent maintenant correctement (clic, sélection, démarrage, erreur)
+- **Audio non-bloquant** : Refonte complète de `playBeep()` pour être non-bloquant
+  - Suppression de tous les appels `delay()` des fonctions audio
+  - Introduction de `updateBuzzer()` appelée dans loop() pour un timing correct
+  - Les clics de bouton ne gèlent plus pendant la lecture des sons
+- **Optimisation écran MAP** : Élimination du redessinage complet lors de l'animation radar
+  - Ne met à jour que la ligne de balayage et les blips, pas l'écran entier
+  - Suppression du scintillement de l'en-tête/pied de page/onglets sur l'écran MAP
+  - Réduction du timer d'animation de 100ms à 50ms pour un balayage radar plus fluide
+- **Disposition écran MAP** : Correction du débordement du cercle radar sur le pied de page
+  - Ajustement de centerY de 140 à 130
+  - Ajustement du rayon de 80 à 70
+  - Le radar s'affiche maintenant correctement dans la zone de contenu avec des marges de sécurité
+
+### Optimisé
+- L'animation du radar se met à jour toutes les 50ms au lieu de 100ms (plus fluide)
+- La ligne de balayage précédente est correctement effacée avant de dessiner la nouvelle
+- Ajout d'un suivi d'état pour `previousRadarSweepAngle` permettant le redessinage sélectif
+
+## [1.4.1] - 2025-12-19
+
+### Corrigé
+- **Détection des boutons** : Suppression de tous les appels bloquants `delay()` dans les callbacks OneButton, qui empêchaient la détection correcte des événements
+  - Tous les callbacks de boutons s'exécutent maintenant sans bloquer la boucle principale
+  - Amélioration de la réactivité et de la fiabilité des boutons
+  - Correction du problème où les clics des boutons 2 et Boot n'étaient pas correctement détectés
+
+### Optimisé
+- **Performance d'affichage** : Élimination de l'effet rideau lors des mises à jour d'écran
+  - Suppression de l'appel continu à `menu->redraw()` dans loop() (redessinage complet de l'écran ~100 fois par seconde)
+  - Implémentation d'une logique de mise à jour intelligente : redessinage des valeurs capteurs uniquement lors de changements significatifs (>0.1°C pour temp, >0.5% pour humidité, etc.)
+  - `drawStatLine()` n'efface et ne redessine maintenant que la zone de valeur, pas le label
+  - Réduction de la fréquence de mise à jour des capteurs de 200ms à 500ms pour de meilleures performances
+  - Ajout d'un suivi d'état pour éviter les redessins inutiles
+
+### Modifié
+- Retour LED simplifié dans les gestionnaires de boutons (suppression des delays)
+- Réduction du délai de la boucle principale de 10ms à 5ms pour une meilleure réactivité des boutons
+- Amélioration de la gestion des LEDs d'alerte avec suivi d'état
+
+## [1.4.0] - 2025-12-19
+
+### Ajouté
+- La pression de référence pour l'altitude (ALTITUDE_SEA_LEVEL_PRESSURE) est maintenant configurable dans config.h pour un affichage correct de l'altitude. À régler selon la pression locale (hPa).
+## [1.3.10] - 2025-12-19
+
+### Ajouté
+- Serial.println dans tous les callbacks OneButton (click/long press) pour afficher les événements boutons dans le moniteur série et faciliter le debug.
+## [1.3.9] - 2025-12-19
+
+### Ajouté
+- Affichage série de l'altitude, du capteur de lumière (brut et %) et de tous les appels à playBeep() pour faciliter le diagnostic matériel et capteurs (patch diagnostic).
 #
 ## [1.3.7] - 2025-12-19
 

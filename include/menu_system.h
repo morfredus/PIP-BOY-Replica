@@ -31,6 +31,22 @@ public:
     String radioMessages[5];
     int radioMessageCount;
     int radarSweepAngle;
+    int previousRadarSweepAngle;  // Pour effacer l'ancienne ligne de sweep
+
+    // Positions FIXES des blips sur le radar (ne changent jamais)
+    static const int BLIP1_ANGLE = 45;
+    static const int BLIP1_DISTANCE = 30;
+    static const int BLIP2_ANGLE = 120;
+    static const int BLIP2_DISTANCE = 50;
+    static const int BLIP3_ANGLE = 220;
+    static const int BLIP3_DISTANCE = 65;
+
+    // Variables pour optimisation de l'affichage (éviter l'effet rideau)
+    float lastDisplayedTemp;
+    float lastDisplayedHumidity;
+    float lastDisplayedPressure;
+    float lastDisplayedAltitude;
+    int lastDisplayedLight;
 
     MenuSystem(PipBoyUI* pipboyUI, SensorManager* sensorManager);
     void nextScreen();
@@ -86,6 +102,16 @@ inline void MenuSystem::redraw() {
         weatherDataAvailable = false;
         radioMessageCount = 0;
         radarSweepAngle = 0;
+        previousRadarSweepAngle = 0;
+
+        // Initialiser les valeurs d'affichage à des valeurs impossibles
+        // pour forcer le premier affichage
+        lastDisplayedTemp = -999.0;
+        lastDisplayedHumidity = -999.0;
+        lastDisplayedPressure = -999.0;
+        lastDisplayedAltitude = -999.0;
+        lastDisplayedLight = -999;
+
         addRadioMessage("RobCo Ind. System Boot");
         addRadioMessage("All systems nominal");
         addRadioMessage("Vault-Tec calling...");
@@ -95,6 +121,18 @@ inline void MenuSystem::redraw() {
         ui->getTFT()->fillScreen(PIPBOY_BLACK);
         currentScreen = (MenuScreen)((currentScreen + 1) % SCREEN_COUNT);
         subMenuIndex = 0;
+
+        // Réinitialiser les valeurs d'affichage pour forcer un nouvel affichage complet
+        lastDisplayedTemp = -999.0;
+        lastDisplayedHumidity = -999.0;
+        lastDisplayedPressure = -999.0;
+        lastDisplayedAltitude = -999.0;
+        lastDisplayedLight = -999;
+
+        // Réinitialiser l'animation du radar
+        radarSweepAngle = 0;
+        previousRadarSweepAngle = 0;
+
         redraw();
     }
 
@@ -102,6 +140,18 @@ inline void MenuSystem::redraw() {
         ui->getTFT()->fillScreen(PIPBOY_BLACK);
         currentScreen = (MenuScreen)((currentScreen - 1 + SCREEN_COUNT) % SCREEN_COUNT);
         subMenuIndex = 0;
+
+        // Réinitialiser les valeurs d'affichage pour forcer un nouvel affichage complet
+        lastDisplayedTemp = -999.0;
+        lastDisplayedHumidity = -999.0;
+        lastDisplayedPressure = -999.0;
+        lastDisplayedAltitude = -999.0;
+        lastDisplayedLight = -999;
+
+        // Réinitialiser l'animation du radar
+        radarSweepAngle = 0;
+        previousRadarSweepAngle = 0;
+
         redraw();
     }
 
@@ -150,11 +200,38 @@ inline void MenuSystem::redraw() {
     }
 inline void MenuSystem::update() {
     unsigned long currentTime = millis();
-    if (currentScreen == SCREEN_MAP && currentTime - animationTimer > 100) {
+    if (currentScreen == SCREEN_MAP && currentTime - animationTimer > 50) {
         animationTimer = currentTime;
         animationFrame++;
+
+        // Paramètres du radar (doivent correspondre à drawMapScreen)
+        int centerX = 120;
+        int centerY = 130;
+        int radius = 70;
+
+        // Effacer l'ancienne ligne de sweep en la redessinant en noir
+        float prevRad = previousRadarSweepAngle * 3.14159 / 180.0;
+        int prevSweepX = centerX + radius * cos(prevRad);
+        int prevSweepY = centerY + radius * sin(prevRad);
+        ui->getTFT()->drawLine(centerX, centerY, prevSweepX, prevSweepY, PIPBOY_BLACK);
+
+        // Calculer le nouvel angle
         radarSweepAngle = (radarSweepAngle + 5) % 360;
-        redraw();
+
+        // Dessiner la nouvelle ligne de sweep
+        float rad = radarSweepAngle * 3.14159 / 180.0;
+        int sweepX = centerX + radius * cos(rad);
+        int sweepY = centerY + radius * sin(rad);
+        ui->drawRadarSweepLine(centerX, centerY, sweepX, sweepY);
+
+        // Redessiner les blips à leurs positions FIXES (peuvent avoir été effacés par la ligne)
+        // Les blips ne bougent JAMAIS, seule la ligne de sweep tourne
+        ui->drawRadarBlip(centerX, centerY, BLIP1_DISTANCE, BLIP1_ANGLE, false);
+        ui->drawRadarBlip(centerX, centerY, BLIP2_DISTANCE, BLIP2_ANGLE, false);
+        ui->drawRadarBlip(centerX, centerY, BLIP3_DISTANCE, BLIP3_ANGLE, true);
+
+        // Mémoriser l'angle actuel pour le prochain effacement
+        previousRadarSweepAngle = radarSweepAngle;
     }
 }
 
@@ -200,27 +277,41 @@ inline void MenuSystem::drawDataScreen() {
 }
 
 inline void MenuSystem::drawMapScreen() {
-    // ui->getTFT()->fillScreen(PIPBOY_BLACK); // SUPPRIMÉ
+    // Dessiner l'écran initial (header, tabs, footer, radar)
     ui->drawHeader("MAP");
     ui->clearContent();
     drawTabs();
+
+    // Paramètres du radar ajustés pour ne pas déborder sur le footer
     int centerX = 120;
-    int centerY = 140;
-    int radius = 80;
+    int centerY = 130;  // Ajusté de 140 à 130
+    int radius = 70;     // Ajusté de 80 à 70
+
+    // Dessiner le radar statique
     ui->drawRadar(centerX, centerY, radius);
+
+    // Dessiner la ligne de sweep initiale
     float rad = radarSweepAngle * 3.14159 / 180.0;
     int sweepX = centerX + radius * cos(rad);
     int sweepY = centerY + radius * sin(rad);
     ui->drawRadarSweepLine(centerX, centerY, sweepX, sweepY);
-    ui->drawRadarBlip(centerX, centerY, 30, (radarSweepAngle + 45) % 360, false);
-    ui->drawRadarBlip(centerX, centerY, 50, (radarSweepAngle + 120) % 360, false);
-    ui->drawRadarBlip(centerX, centerY, 65, (radarSweepAngle + 220) % 360, true);
+
+    // Dessiner les blips à leurs positions FIXES (ne changent jamais)
+    ui->drawRadarBlip(centerX, centerY, BLIP1_DISTANCE, BLIP1_ANGLE, false);
+    ui->drawRadarBlip(centerX, centerY, BLIP2_DISTANCE, BLIP2_ANGLE, false);
+    ui->drawRadarBlip(centerX, centerY, BLIP3_DISTANCE, BLIP3_ANGLE, true);
+
+    // Afficher les coordonnées
     char coordBuffer[30];
     snprintf(coordBuffer, sizeof(coordBuffer), "N:%d E:%d",
              (int)(sensors->getAltitude() + 1000),
              (int)(sensors->getPressure()));
     ui->drawStatLine(60, "COORD", coordBuffer, false);
+
     ui->drawFooter("NEXT", "SCAN");
+
+    // Mémoriser l'angle initial
+    previousRadarSweepAngle = radarSweepAngle;
 }
 
 inline void MenuSystem::drawTabs() {

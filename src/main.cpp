@@ -71,34 +71,49 @@ OneButton buttonBoot(PIN_BUTTON_BOOT, true);
 // Gestion du son (Buzzer)
 // ========================================
 
+// Variables pour gestion non-bloquante du buzzer
+unsigned long buzzerStopTime = 0;
+bool buzzerActive = false;
+
 void playBeep(int frequency, int duration) {
+    Serial.print("[DEBUG] playBeep freq: ");
+    Serial.print(frequency);
+    Serial.print(" Hz, dur: ");
+    Serial.print(duration);
+    Serial.println(" ms");
+
+    // Démarrer le son
     ledcWriteTone(BUZZER_PWM_CHANNEL, frequency);
     ledcWrite(BUZZER_PWM_CHANNEL, 128); // 50% duty
-    delay(duration);
-    ledcWrite(BUZZER_PWM_CHANNEL, 0); // Stop
-    ledcWriteTone(BUZZER_PWM_CHANNEL, 0);
+
+    // Mémoriser quand arrêter (gestion non-bloquante)
+    buzzerStopTime = millis() + duration;
+    buzzerActive = true;
+}
+
+// Fonction appelée dans loop() pour arrêter le buzzer au bon moment
+void updateBuzzer() {
+    if (buzzerActive && millis() >= buzzerStopTime) {
+        ledcWrite(BUZZER_PWM_CHANNEL, 0); // Stop
+        ledcWriteTone(BUZZER_PWM_CHANNEL, 0);
+        buzzerActive = false;
+    }
 }
 
 void playClickSound() {
-    playBeep(800, 50);
+    playBeep(800, 20);  // Bip bref pour les clics
 }
 
 void playSelectSound() {
-    playBeep(1200, 80);
+    playBeep(1200, 30);  // Bip bref pour les sélections
 }
 
 void playErrorSound() {
-    playBeep(400, 150);
-    delay(100);
-    playBeep(300, 150);
+    playBeep(400, 40);  // Bip bref pour les erreurs
 }
 
 void playBootSound() {
-    playBeep(600, 100);
-    delay(80);
-    playBeep(800, 100);
-    delay(80);
-    playBeep(1000, 150);
+    playBeep(1000, 50);  // Bip légèrement plus long pour le boot
 }
 
 // ========================================
@@ -241,7 +256,11 @@ void setup() {
     pinMode(PIN_LED_RED, OUTPUT);
     pinMode(PIN_LED_GREEN, OUTPUT);
     pinMode(PIN_LED_BLUE, OUTPUT);
-    pinMode(PIN_BUZZER, OUTPUT);
+
+    // Configuration PWM pour le buzzer
+    Serial.println("[BUZZER] Initializing buzzer PWM...");
+    ledcSetup(BUZZER_PWM_CHANNEL, BUZZER_PWM_FREQ, BUZZER_PWM_RESOLUTION);
+    ledcAttachPin(PIN_BUZZER, BUZZER_PWM_CHANNEL);
 
     // LED de démarrage
     ledOrange();
@@ -356,7 +375,10 @@ void loop() {
     // Watchdog rétroéclairage : force la valeur à 255 à chaque itération
     setBacklight(255);
 
-    // Tick boutons OneButton
+    // Gestion non-bloquante du buzzer
+    updateBuzzer();
+
+    // Tick boutons OneButton - CRUCIAL pour la détection des événements
     button1.tick();
     button2.tick();
     buttonBoot.tick();

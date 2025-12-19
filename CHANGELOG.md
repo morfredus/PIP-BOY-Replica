@@ -1,3 +1,78 @@
+## [1.4.3] - 2025-12-19
+
+### Fixed
+- **Audio beeps duration**: Reduced all audio beep durations for more responsive feedback
+  - Click sound: 50ms → 20ms (brief)
+  - Select sound: 80ms → 30ms (brief)
+  - Error sound: 200ms → 40ms (brief)
+  - Boot sound: 150ms → 50ms (slightly longer)
+- **Radar blips spinning**: Fixed radar blips that were rotating and filling the screen
+  - Blips now stay at FIXED positions (angles 45°, 120°, 220°)
+  - Only the sweep line rotates, not the blips
+  - Introduced constants BLIP1_ANGLE, BLIP2_ANGLE, BLIP3_ANGLE for fixed positions
+  - Radar now behaves like a real radar with stationary targets
+
+### Technical
+- Added static const members for fixed blip positions in MenuSystem class
+- Blips positions defined once and reused in both drawMapScreen() and update()
+
+## [1.4.2] - 2025-12-19
+
+### Fixed
+- **Buzzer now working**: Added missing PWM initialization (`ledcSetup()` and `ledcAttachPin()`) in setup()
+  - Buzzer was silent because PWM channel was never configured
+  - All sound effects now work properly (click, select, boot, error sounds)
+- **Non-blocking audio**: Completely refactored `playBeep()` to be non-blocking
+  - Removed all `delay()` calls from audio functions
+  - Introduced `updateBuzzer()` called in loop() for proper timing
+  - Button clicks no longer freeze during sound playback
+- **MAP screen optimization**: Eliminated full-screen redraw on radar animation
+  - Only updates the sweep line and blips, not the entire screen
+  - Removed header/footer/tabs flickering on MAP screen
+  - Reduced animation timer from 100ms to 50ms for smoother radar sweep
+- **MAP screen layout**: Fixed radar circle overflow onto footer
+  - Adjusted centerY from 140 to 130
+  - Adjusted radius from 80 to 70
+  - Radar now properly fits within content area with safe margins
+
+### Optimized
+- Radar animation now updates every 50ms instead of 100ms (smoother)
+- Previous sweep line properly erased before drawing new one
+- State tracking added for `previousRadarSweepAngle` to enable selective redraw
+
+## [1.4.1] - 2025-12-19
+
+### Fixed
+- **Button detection**: Removed all blocking `delay()` calls from OneButton callbacks, which were preventing proper event detection
+  - All button callbacks now execute without blocking the main loop
+  - Improved button responsiveness and reliability
+  - Fixed issue where button2 and buttonBoot clicks were not properly detected
+
+### Optimized
+- **Display performance**: Eliminated curtain effect on screen updates
+  - Removed continuous `menu->redraw()` call in loop() (was redrawing entire screen ~100 times per second)
+  - Implemented smart update logic: only redraw sensor values when they change significantly (>0.1°C for temp, >0.5% for humidity, etc.)
+  - `drawStatLine()` now only erases and redraws the value area, not the label
+  - Reduced sensor update frequency from 200ms to 500ms for better performance
+  - Added state tracking to prevent unnecessary redraws
+
+### Changed
+- LED feedback simplified in button handlers (removed delays)
+- Reduced main loop delay from 10ms to 5ms for better button responsiveness
+- Improved warning LED handling with state tracking
+
+## [1.4.0] - 2025-12-19
+
+### Added
+- Altitude reference pressure (ALTITUDE_SEA_LEVEL_PRESSURE) is now configurable in config.h for correct altitude display. Set to your local sea level pressure (hPa).
+## [1.3.10] - 2025-12-19
+
+### Added
+- Serial.println in all OneButton callbacks (click/long press) to display button events in the serial monitor for easier debugging.
+## [1.3.9] - 2025-12-19
+
+### Added
+- Serial debug output for altitude, light sensor (raw and percent), and all playBeep() calls to help diagnose hardware and sensor issues (diagnostic patch).
 #
 ## [1.3.7] - 2025-12-19
 

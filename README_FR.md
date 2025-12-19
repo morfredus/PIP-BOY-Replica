@@ -2,7 +2,37 @@
 
 Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, construite avec ESP32-S3 et offrant une interface monochrome verte rétro-futuriste.
 
-![Version](https://img.shields.io/badge/version-1.3.7-green.svg)
+# PATCH 1.4.3
+![Version](https://img.shields.io/badge/version-1.4.3-green.svg)
+## [1.4.3] - 2025-12-19
+
+- **Corrigé** : Durée des bips audio - réduction de toutes les durées de bip (clic: 50→20ms, sélection: 80→30ms, erreur: 200→40ms, boot: 150→50ms)
+- **Corrigé** : Blips du radar qui tournent - les blips restent à des positions FIXES (45°, 120°, 220°), seule la ligne de balayage tourne
+- **Amélioré** : Le radar se comporte comme un vrai radar avec des cibles stationnaires
+
+## [1.4.2] - 2025-12-19
+
+- **Corrigé** : Buzzer fonctionnel - ajout de l'initialisation PWM manquante
+- **Corrigé** : Audio non-bloquant - suppression de tous les delays de playBeep(), les clics bouton ne gèlent plus
+- **Corrigé** : Optimisation écran MAP - élimination du redessinage complet lors de l'animation radar (en-tête/pied de page ne scintillent plus)
+- **Corrigé** : Disposition écran MAP - le cercle radar ne déborde plus sur le pied de page (ajusté centerY: 140→130, rayon: 80→70)
+- **Optimisé** : Animation radar plus fluide (intervalle de mise à jour 100ms → 50ms)
+
+## [1.4.1] - 2025-12-19
+
+- **Corrigé** : Problèmes de détection des boutons - suppression de tous les appels `delay()` bloquants dans les callbacks OneButton
+- **Optimisé** : Élimination de l'effet rideau sur l'affichage - logique de redessinage intelligente qui ne met à jour que les valeurs modifiées
+- **Performance** : Réduction de la fréquence de mise à jour des capteurs (200ms → 500ms) et du délai de la boucle principale (10ms → 5ms)
+
+## [1.4.0] - 2025-12-19
+
+- La pression de référence pour l'altitude (ALTITUDE_SEA_LEVEL_PRESSURE) est maintenant configurable dans config.h pour un affichage correct de l'altitude. À régler selon la pression locale (hPa).
+## [1.3.10] - 2025-12-19
+
+- Serial.println dans tous les callbacks OneButton (click/long press) pour afficher les événements boutons dans le moniteur série et faciliter le debug.
+## [1.3.9] - 2025-12-19
+
+- Affichage série de l'altitude, du capteur de lumière (brut et %) et de tous les appels à playBeep() pour faciliter le diagnostic matériel et capteurs (patch diagnostic).
 #
 ## [1.3.7] - 2025-12-19
 
