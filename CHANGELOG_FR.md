@@ -74,10 +74,6 @@
 ### Ajouté
 - Affichage série de l'altitude, du capteur de lumière (brut et %) et de tous les appels à playBeep() pour faciliter le diagnostic matériel et capteurs (patch diagnostic).
 #
-## [1.3.8] - 2025-12-19
-
-### Ajouté
-- Affichage série de l'état des boutons dans loop() pour faciliter le diagnostic matériel/logiciel avec OneButton (patch diagnostic).
 ## [1.3.7] - 2025-12-19
 
 ### Corrigé

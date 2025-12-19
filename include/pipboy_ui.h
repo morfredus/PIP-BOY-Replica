@@ -152,27 +152,16 @@ public:
         tft->print(tabName);
     }
 
-    // Dessiner une ligne de stat avec effacement de la zone de valeur uniquement
+    // Dessiner une ligne de stat
     void drawStatLine(int y, const char* label, const char* value, bool warning = false) {
         tft->setTextSize(1);
         uint16_t color = warning ? PIPBOY_LIGHTGREEN : PIPBOY_GREEN;
 
-        // Calculer la largeur du label
-        int16_t x1, y1;
-        uint16_t w, h;
-        String labelWithColon = String(label) + ": ";
-        tft->getTextBounds(labelWithColon.c_str(), 10, y, &x1, &y1, &w, &h);
-
-        // Effacer uniquement la zone de la valeur (pas le label)
-        int valueX = 10 + w;
-        tft->fillRect(valueX, y, screenWidth - valueX - 10, h, PIPBOY_BLACK);
-
-        // Dessiner le label (ne change jamais)
         tft->setTextColor(color);
         tft->setCursor(10, y);
-        tft->print(labelWithColon);
+        tft->print(label);
+        tft->print(": ");
 
-        // Dessiner la valeur
         if (warning) {
             tft->print("!");
         }
