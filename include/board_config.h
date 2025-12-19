@@ -17,6 +17,11 @@
 #define PIN_TFT_BL                7   // Backlight (Rétroéclairage) : Souvent utilisé avec le PWM pour ajuster la luminosité.
 
 // ------------------------------------
+// TFT ILI9341 (SPI) - Alternative
+// ------------------------------------
+#define PIN_TFT_MISO             8   // SPI MISO (Master In Slave Out) : Broche de données depuis l'écran. Câblage direct.
+
+// ------------------------------------
 // I2C
 // ------------------------------------
 // Configuration du bus de communication I2C.

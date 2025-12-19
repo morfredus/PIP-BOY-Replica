@@ -169,6 +169,10 @@ public:
         return false;
     }
 
+    Button* getButton1() { return button1; }
+    Button* getButton2() { return button2; }
+    Button* getButtonBoot() { return buttonBoot; }
+
     ~ButtonHandler() {
         delete button1;
         delete button2;

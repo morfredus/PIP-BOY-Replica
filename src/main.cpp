@@ -28,7 +28,9 @@
 #include <WiFiMulti.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
+
 #include <Adafruit_NeoPixel.h>
+#include <OneButton.h>
 
 #include "board_config.h"
 #include "config.h"
@@ -36,7 +38,6 @@
 #include "pipboy_ui.h"
 #include "sensor_manager.h"
 #include "menu_system.h"
-#include "button_handler.h"
 
 // ========================================
 // Objets globaux
@@ -55,14 +56,27 @@ WiFiMulti wifiMulti;
 PipBoyUI* ui;
 SensorManager* sensors;
 MenuSystem* menu;
-ButtonHandler* buttons;
+
+// Gestion boutons avec OneButton
+OneButton button1(PIN_BUTTON_1, true);
+OneButton button2(PIN_BUTTON_2, true);
+OneButton buttonBoot(PIN_BUTTON_BOOT, true);
+
+// PWM pour le buzzer
+#define BUZZER_PWM_CHANNEL 1
+#define BUZZER_PWM_FREQ 4000
+#define BUZZER_PWM_RESOLUTION 8
 
 // ========================================
 // Gestion du son (Buzzer)
 // ========================================
 
 void playBeep(int frequency, int duration) {
-    tone(PIN_BUZZER, frequency, duration);
+    ledcWriteTone(BUZZER_PWM_CHANNEL, frequency);
+    ledcWrite(BUZZER_PWM_CHANNEL, 128); // 50% duty
+    delay(duration);
+    ledcWrite(BUZZER_PWM_CHANNEL, 0); // Stop
+    ledcWriteTone(BUZZER_PWM_CHANNEL, 0);
 }
 
 void playClickSound() {
@@ -172,10 +186,7 @@ void initBacklight() {
 void initWiFi() {
     Serial.println("[WiFi] Connecting...");
 
-    tft.setTextSize(1);
-    tft.setTextColor(PIPBOY_GREEN);
-    tft.setCursor(10, 180);
-    tft.print("Connecting to WiFi...");
+    ui->drawWiFiProgress("Connecting to WiFi...", 0);
 
     WiFi.mode(WIFI_STA);
 
@@ -187,7 +198,7 @@ void initWiFi() {
     while (wifiMulti.run() != WL_CONNECTED && attempts < 20) {
         delay(500);
         Serial.print(".");
-        tft.print(".");
+        ui->drawWiFiProgress("Connecting to WiFi...", attempts);
         attempts++;
     }
 
@@ -198,17 +209,16 @@ void initWiFi() {
         Serial.print("[WiFi] IP: ");
         Serial.println(WiFi.localIP());
 
-        tft.setCursor(10, 195);
-        tft.print("WiFi OK - ");
-        tft.print(WiFi.localIP());
+        char okMsg[40];
+        snprintf(okMsg, sizeof(okMsg), "WiFi OK - %s", WiFi.localIP().toString().c_str());
+        ui->drawWiFiProgress(okMsg, attempts);
 
         playBeep(1000, 100);
         delay(100);
         playBeep(1200, 100);
     } else {
         Serial.println("\n[WiFi] Connection failed!");
-        tft.setCursor(10, 195);
-        tft.print("WiFi FAILED");
+        ui->drawWiFiProgress("WiFi FAILED", attempts);
         playErrorSound();
     }
 
@@ -273,10 +283,52 @@ void setup() {
     // Initialiser WiFi
     initWiFi();
 
-    // Initialiser les boutons
-    Serial.println("[BUTTONS] Initializing buttons...");
-    buttons = new ButtonHandler(PIN_BUTTON_1, PIN_BUTTON_2, PIN_BUTTON_BOOT);
-    buttons->begin();
+
+    // Initialiser les boutons avec OneButton
+    Serial.println("[BUTTONS] Initializing OneButton...");
+    button1.attachClick([](){
+        playClickSound();
+        ledOrange();
+        menu->nextScreen();
+        delay(50);
+        ledGreen();
+    });
+    button2.attachClick([](){
+        playSelectSound();
+        ledOrange();
+        menu->actionButton();
+        delay(50);
+        ledGreen();
+    });
+    buttonBoot.attachClick([](){
+        playBeep(500, 100);
+        ledRed();
+        Serial.println("[SYSTEM] Reset to STAT screen");
+        menu->previousScreen();
+        delay(100);
+        ledGreen();
+    });
+    button1.attachLongPressStart([](){
+        Serial.println("[SYSTEM] Long press detected - Rebooting display...");
+        playBootSound();
+        ui->begin();
+        delay(1000);
+        menu->redraw();
+    });
+    button2.attachLongPressStart([](){
+        Serial.println("[SYSTEM] Long press detected - Reconnecting WiFi...");
+        ledOrange();
+        tft.fillScreen(PIPBOY_BLACK);
+        tft.setTextSize(1);
+        tft.setTextColor(PIPBOY_GREEN);
+        tft.setCursor(10, 100);
+        tft.print("Reconnecting WiFi...");
+        WiFi.disconnect();
+        delay(500);
+        initWiFi();
+        menu->redraw();
+        ledGreen();
+    });
 
     // Créer le système de menu
     menu = new MenuSystem(ui, sensors);
@@ -291,6 +343,9 @@ void setup() {
     Serial.println("========================================\n");
 
     playBeep(1500, 200);
+
+    // Afficher la première page du menu dès le boot
+    menu->redraw();
 }
 
 // ========================================
@@ -298,78 +353,29 @@ void setup() {
 // ========================================
 
 void loop() {
-    // Mettre à jour les boutons
-    buttons->update();
+    // Watchdog rétroéclairage : force la valeur à 255 à chaque itération
+    setBacklight(255);
 
-    // Mettre à jour les capteurs
+    // Tick boutons OneButton
+    button1.tick();
+    button2.tick();
+    buttonBoot.tick();
+
     sensors->update();
-
-    // Mettre à jour les animations
     menu->update();
 
-    // Gestion des boutons
-    if (buttons->button1Pressed()) {
-        playClickSound();
-        ledOrange();
-        menu->nextScreen();
-        delay(50);
-        ledGreen();
+    static unsigned long lastSensorUpdate = 0;
+    if (menu != nullptr && lastSensorUpdate + 200 < millis()) {
+        lastSensorUpdate = millis();
+        menu->updateSensorValues();
     }
 
-    if (buttons->button2Pressed()) {
-        playSelectSound();
-        ledOrange();
-        menu->actionButton();
-        delay(50);
-        ledGreen();
-    }
-
-    if (buttons->bootPressed()) {
-        playBeep(500, 100);
-        ledRed();
-
-        // Retour à l'écran STAT
-        Serial.println("[SYSTEM] Reset to STAT screen");
-        menu->previousScreen();
-
-        delay(100);
-        ledGreen();
-    }
-
-    // Appui long sur Button1 = redémarrer la séquence de boot
-    if (buttons->button1LongPressed()) {
-        Serial.println("[SYSTEM] Long press detected - Rebooting display...");
-        playBootSound();
-        ui->begin();
-        delay(1000);
-        menu->redraw();
-    }
-
-    // Appui long sur Button2 = reconnexion WiFi
-    if (buttons->button2LongPressed()) {
-        Serial.println("[SYSTEM] Long press detected - Reconnecting WiFi...");
-        ledOrange();
-
-        tft.fillScreen(PIPBOY_BLACK);
-        tft.setTextSize(1);
-        tft.setTextColor(PIPBOY_GREEN);
-        tft.setCursor(10, 100);
-        tft.print("Reconnecting WiFi...");
-
-        WiFi.disconnect();
-        delay(500);
-        initWiFi();
-
-        menu->redraw();
-        ledGreen();
-    }
-
-    // Effet LED pulsé si des alertes sont détectées
     if (sensors->isTemperatureWarning() ||
         sensors->isHumidityWarning() ||
         sensors->isPressureWarning()) {
         ledPulse();
     }
 
+    menu->redraw();
     delay(10);
 }

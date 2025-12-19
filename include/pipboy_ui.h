@@ -1,10 +1,9 @@
-    // Accès direct à l'objet TFT (pour effacement global)
-    Adafruit_ST7789* getTFT() { return tft; }
 #ifndef PIPBOY_UI_H
 #define PIPBOY_UI_H
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
+// ...existing code...
 
 // Couleurs Pip-Boy (thème vert phosphorescent)
 #define PIPBOY_GREEN     0x07E0  // Vert principal
@@ -28,6 +27,9 @@ public:
         scanlineTimer = 0;
         scanlinePhase = false;
     }
+
+    // Accès direct à l'objet TFT (pour effacement global)
+    Adafruit_ST7789* getTFT() { return tft; }
 
     // Initialisation de l'écran Pip-Boy
     void begin() {
@@ -177,6 +179,21 @@ public:
 
         // Reste vide
         tft->fillRect(x + 2 + fillWidth, y + 2, w - 4 - fillWidth, h - 4, PIPBOY_BLACK);
+    }
+
+    // Afficher la progression de connexion WiFi
+    void drawWiFiProgress(const char* message, int step = -1) {
+        tft->fillScreen(PIPBOY_BLACK);
+        drawHeader("WiFi");
+        tft->setTextColor(PIPBOY_GREEN);
+        tft->setTextSize(1);
+        tft->setCursor(10, 60);
+        tft->print(message);
+        if (step >= 0) {
+            tft->setCursor(10, 80);
+            tft->print("Progression : ");
+            tft->print(step);
+        }
     }
 
     // Effet scanline animé
