@@ -14,21 +14,13 @@
 
 // Display type selection
 // Supported displays:
-// - ST7789_240x240: Standard square display (default)
-// - ST7789V_240x320: 2 inch IPS rectangular display
-// Uncomment ONE of the following:
-#define DISPLAY_ST7789_240x240      // Standard 240x240 display (default)
-// #define DISPLAY_ST7789V_240x320   // 2 inch IPS 240x320 display
+// - ST7789: 240x240 or 240x320 TFT display
+// - ST7735: 128x160 TFT display (smaller option)
+#define DISPLAY_TYPE_ST7789     // Use ST7789 display
 
-// Display dimensions (auto-configured based on display type)
-#ifdef DISPLAY_ST7789V_240x320
-    #define DISPLAY_WIDTH           240
-    #define DISPLAY_HEIGHT          320
-#else
-    // Default to 240x240
-    #define DISPLAY_WIDTH           240
-    #define DISPLAY_HEIGHT          240
-#endif
+// Display dimensions
+#define DISPLAY_WIDTH           240
+#define DISPLAY_HEIGHT          240
 
 // Display rotation (0, 1, 2, or 3)
 // 0 = 0°, 1 = 90°, 2 = 180°, 3 = 270°
@@ -46,21 +38,12 @@
 // =========================================================
 
 // Input method selection
-// Choose ONE input method:
-// - USE_BUTTONS: Standard tactile buttons (default)
-// - USE_ROTARY_ENCODER: KY-040 rotary encoder module
-// Uncomment ONE of the following:
-#define USE_BUTTONS             // Standard buttons (default)
-// #define USE_ROTARY_ENCODER   // KY-040 rotary encoder
+#define USE_BUTTONS             true    // Enable button input
+#define USE_ROTARY_ENCODER      false   // Enable rotary encoder (not yet implemented)
 
-// Button configuration (for USE_BUTTONS)
+// Button configuration
 #define BUTTON_DEBOUNCE_MS      50      // Debounce delay in milliseconds
 #define LONG_PRESS_DURATION_MS  2000    // Long press threshold in milliseconds
-
-// Rotary encoder configuration (for USE_ROTARY_ENCODER)
-#define ENCODER_STEPS_PER_NOTCH 4       // Pulses per detent (usually 4)
-#define ENCODER_DEBOUNCE_MS     5       // Debounce delay in milliseconds
-#define ENCODER_BUTTON_LONG_PRESS_MS 2000  // Long press threshold for encoder button
 
 // =========================================================
 // WEATHER CONFIGURATION
@@ -107,33 +90,6 @@
 // I2C sensor addresses
 #define BMP280_I2C_ADDRESS_PRIMARY    0x76  // Primary address (most common)
 #define BMP280_I2C_ADDRESS_SECONDARY  0x77  // Secondary address (alternative)
-
-// =========================================================
-// SD CARD CONFIGURATION
-// =========================================================
-
-// Enable/disable SD Card support
-// Uncomment to enable SD Card module
-// #define ENABLE_SD_CARD
-
-// SD Card mount point
-#define SD_MOUNT_POINT          "/sd"
-
-// SD Card SPI frequency (Hz)
-// Common values: 4000000 (4MHz), 8000000 (8MHz), 16000000 (16MHz)
-// Lower frequencies are more reliable but slower
-#define SD_SPI_FREQ             4000000
-
-// Audio files directory on SD Card
-#define SD_AUDIO_DIR            "/audio"
-#define SD_MUSIC_DIR            "/music"
-#define SD_VIDEO_DIR            "/video"
-
-// Supported audio formats (for future implementation)
-// - WAV: Uncompressed audio
-// - MP3: Compressed audio (requires decoder library)
-#define AUDIO_FORMAT_WAV        ".wav"
-#define AUDIO_FORMAT_MP3        ".mp3"
 
 // =========================================================
 // AUDIO CONFIGURATION

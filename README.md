@@ -2,15 +2,8 @@
 
 A fully functional Pip-Boy replica inspired by the Fallout game series, built with ESP32-S3 and featuring a retro-futuristic green monochrome interface.
 
-# MINOR 1.5.0
-![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)
-## [1.5.0] - 2025-12-19
-
-- **NEW**: Multi-display support - ST7789V 240x320 (2 inch IPS) display option
-- **NEW**: Rotary encoder support - KY-040 module as alternative to buttons
-- **NEW**: SD Card support - Pin definitions for micro SD module (future audio/video)
-- **NEW**: Comprehensive documentation - Hardware guides and pin mappings (EN + FR)
-
+# PATCH 1.4.3
+![Version](https://img.shields.io/badge/version-1.4.3-green.svg)
 ## [1.4.3] - 2025-12-19
 
 - **Fixed**: Audio beeps duration - reduced all beep durations (click: 50→20ms, select: 80→30ms, error: 200→40ms, boot: 150→50ms)
