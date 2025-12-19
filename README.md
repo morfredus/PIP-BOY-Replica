@@ -2,30 +2,24 @@
 
 A fully functional Pip-Boy replica inspired by the Fallout game series, built with ESP32-S3 and featuring a retro-futuristic green monochrome interface.
 
-# PATCH 1.4.3
-![Version](https://img.shields.io/badge/version-1.4.3-green.svg)
-## [1.4.3] - 2025-12-19
+![Version](https://img.shields.io/badge/version-1.5.0-green.svg)
 
-- **Fixed**: Audio beeps duration - reduced all beep durations (click: 50→20ms, select: 80→30ms, error: 200→40ms, boot: 150→50ms)
-- **Fixed**: Radar blips spinning - blips now stay at FIXED positions (45°, 120°, 220°), only sweep line rotates
-- **Improved**: Radar behaves like a real radar with stationary targets
+## [1.5.0] - 2025-12-19
 
-## [1.4.2] - 2025-12-19
+### Major Improvements
+- **Button Handling**: Completely rewritten OneButton integration with proper timing configuration and double-click support
+- **Display Optimization**: Eliminated screen flickering and curtain effect through smart partial updates
+- **Performance**: Dramatically reduced screen update frequency with intelligent caching system
 
-- **Fixed**: Buzzer now working - added missing PWM initialization
-- **Fixed**: Non-blocking audio - removed all delays from playBeep(), button clicks no longer freeze
-- **Fixed**: MAP screen optimization - eliminated full-screen redraw on radar animation (header/footer no longer flicker)
-- **Fixed**: MAP screen layout - radar circle no longer overflows onto footer (adjusted centerY: 140→130, radius: 80→70)
-- **Optimized**: Smoother radar animation (100ms → 50ms update interval)
+### Key Features
+- Double-click Button 1 to force screen refresh
+- Sensor values only update when they actually change (±0.1°C, ±0.5%, etc.)
+- Header and footer remain static during updates
+- All button events (click, double-click, long press) now reliably detected
 
-## [1.4.1] - 2025-12-19
+## Previous Versions
 
-- **Fixed**: Button detection issues - removed all blocking `delay()` calls from OneButton callbacks
-- **Optimized**: Eliminated curtain effect on display updates - smart redraw logic only updates changed values
-- **Performance**: Reduced sensor update frequency (200ms → 500ms) and main loop delay (10ms → 5ms)
-
-## [1.4.0] - 2025-12-19
-
+### [1.4.0] - 2025-12-19
 - Altitude reference pressure (ALTITUDE_SEA_LEVEL_PRESSURE) is now configurable in config.h for correct altitude display. Set to your local sea level pressure (hPa).
 ## [1.3.10] - 2025-12-19
 
@@ -82,11 +76,14 @@ A fully functional Pip-Boy replica inspired by the Fallout game series, built wi
 
 ### 🎮 User Interaction
 
-- **Button 1**: Navigate between screens (STAT → DATA → RADIO → MAP)
-- **Button 2**: Context action (refresh sensors, fetch weather, select message)
+- **Button 1**:
+  - Single click: Navigate between screens (STAT → DATA → RADIO → MAP)
+  - Double-click: Force screen refresh
+  - Long press (800ms): Restart boot animation
+- **Button 2**:
+  - Single click: Context action (refresh sensors, fetch weather, select message)
+  - Long press (800ms): Reconnect WiFi
 - **Boot Button**: Quick return to STAT screen
-- **Long Press Button 1**: Restart boot animation
-- **Long Press Button 2**: Reconnect WiFi
 
 ### 🔊 Audio & Visual Feedback
 

@@ -305,35 +305,45 @@ void setup() {
 
     // Initialiser les boutons avec OneButton
     Serial.println("[BUTTONS] Initializing OneButton...");
+
+    // Configuration des durées pour OneButton (en ms)
+    button1.setClickTicks(50);        // Durée minimale pour détecter un clic
+    button1.setPressTicks(800);       // Durée pour détecter un appui long
+    button2.setClickTicks(50);
+    button2.setPressTicks(800);
+    buttonBoot.setClickTicks(50);
+    buttonBoot.setPressTicks(800);
+
+    // Callbacks sans delay pour éviter le blocage
     button1.attachClick([](){
         playClickSound();
         ledOrange();
         menu->nextScreen();
-        delay(50);
         ledGreen();
     });
+
     button2.attachClick([](){
         playSelectSound();
         ledOrange();
         menu->actionButton();
-        delay(50);
         ledGreen();
     });
+
     buttonBoot.attachClick([](){
         playBeep(500, 100);
         ledRed();
         Serial.println("[SYSTEM] Reset to STAT screen");
         menu->previousScreen();
-        delay(100);
         ledGreen();
     });
+
     button1.attachLongPressStart([](){
         Serial.println("[SYSTEM] Long press detected - Rebooting display...");
         playBootSound();
         ui->begin();
-        delay(1000);
-        menu->redraw();
+        menu->forceRedraw();
     });
+
     button2.attachLongPressStart([](){
         Serial.println("[SYSTEM] Long press detected - Reconnecting WiFi...");
         ledOrange();
@@ -343,17 +353,23 @@ void setup() {
         tft.setCursor(10, 100);
         tft.print("Reconnecting WiFi...");
         WiFi.disconnect();
-        delay(500);
         initWiFi();
-        menu->redraw();
+        menu->forceRedraw();
         ledGreen();
+    });
+
+    // Double-clic sur button1 pour rafraîchir l'affichage
+    button1.attachDoubleClick([](){
+        Serial.println("[BTN1] Double-click détecté");
+        playBeep(1000, 50);
+        menu->forceRedraw();
     });
 
     // Créer le système de menu
     menu = new MenuSystem(ui, sensors);
 
     // Dessiner l'écran initial
-    menu->redraw();
+    menu->forceRedraw();
 
     // LED verte pour indiquer que tout est OK
     ledGreen();
@@ -362,9 +378,6 @@ void setup() {
     Serial.println("========================================\n");
 
     playBeep(1500, 200);
-
-    // Afficher la première page du menu dès le boot
-    menu->redraw();
 }
 
 // ========================================
@@ -375,29 +388,53 @@ void loop() {
     // Watchdog rétroéclairage : force la valeur à 255 à chaque itération
     setBacklight(255);
 
-    // Gestion non-bloquante du buzzer
-    updateBuzzer();
-
-    // Tick boutons OneButton - CRUCIAL pour la détection des événements
+    // Tick boutons OneButton - DOIT être appelé sans blocage
     button1.tick();
     button2.tick();
     buttonBoot.tick();
 
+    // DEBUG: Affichage de l'état des boutons sur le port série
+    static unsigned long lastButtonDebug = 0;
+    if (millis() - lastButtonDebug > 1000) {
+        lastButtonDebug = millis();
+        Serial.print("BTN1: "); Serial.print(digitalRead(PIN_BUTTON_1));
+        Serial.print(" | BTN2: "); Serial.print(digitalRead(PIN_BUTTON_2));
+        Serial.print(" | BOOT: "); Serial.println(digitalRead(PIN_BUTTON_BOOT));
+    }
+
+    // DEBUG: Affichage de l'altitude et de la luminosité
+    static unsigned long lastDebug = 0;
+    if (millis() - lastDebug > 2000) {
+        lastDebug = millis();
+        Serial.print("[DEBUG] Altitude: ");
+        Serial.print(sensors->getAltitude());
+        Serial.print(" m | Lumière: ");
+        Serial.print(sensors->getLightLevel());
+        Serial.print(" (" );
+        Serial.print(sensors->getLightPercent());
+        Serial.println("%)");
+    }
+
+    // Mise à jour des capteurs
     sensors->update();
+
+    // Mise à jour de l'animation du menu (radar, etc.)
     menu->update();
 
+    // Mise à jour des valeurs de capteurs sur l'écran (seulement si changement)
     static unsigned long lastSensorUpdate = 0;
-    if (menu != nullptr && lastSensorUpdate + 200 < millis()) {
+    if (menu != nullptr && lastSensorUpdate + 500 < millis()) {
         lastSensorUpdate = millis();
         menu->updateSensorValues();
     }
 
+    // LED pulsée en cas d'alerte
     if (sensors->isTemperatureWarning() ||
         sensors->isHumidityWarning() ||
         sensors->isPressureWarning()) {
         ledPulse();
     }
 
-    menu->redraw();
+    // Ne PAS appeler redraw() ici - seulement en cas de changement
     delay(10);
 }
