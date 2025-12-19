@@ -2,8 +2,16 @@
 
 Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, construite avec ESP32-S3 et offrant une interface monochrome verte rétro-futuriste.
 
-# PATCH 1.4.1
-![Version](https://img.shields.io/badge/version-1.4.1-green.svg)
+# PATCH 1.4.2
+![Version](https://img.shields.io/badge/version-1.4.2-green.svg)
+## [1.4.2] - 2025-12-19
+
+- **Corrigé** : Buzzer fonctionnel - ajout de l'initialisation PWM manquante
+- **Corrigé** : Audio non-bloquant - suppression de tous les delays de playBeep(), les clics bouton ne gèlent plus
+- **Corrigé** : Optimisation écran MAP - élimination du redessinage complet lors de l'animation radar (en-tête/pied de page ne scintillent plus)
+- **Corrigé** : Disposition écran MAP - le cercle radar ne déborde plus sur le pied de page (ajusté centerY: 140→130, rayon: 80→70)
+- **Optimisé** : Animation radar plus fluide (intervalle de mise à jour 100ms → 50ms)
+
 ## [1.4.1] - 2025-12-19
 
 - **Corrigé** : Problèmes de détection des boutons - suppression de tous les appels `delay()` bloquants dans les callbacks OneButton

@@ -1,3 +1,27 @@
+## [1.4.2] - 2025-12-19
+
+### Corrigé
+- **Buzzer fonctionnel** : Ajout de l'initialisation PWM manquante (`ledcSetup()` et `ledcAttachPin()`) dans setup()
+  - Le buzzer était silencieux car le canal PWM n'était jamais configuré
+  - Tous les effets sonores fonctionnent maintenant correctement (clic, sélection, démarrage, erreur)
+- **Audio non-bloquant** : Refonte complète de `playBeep()` pour être non-bloquant
+  - Suppression de tous les appels `delay()` des fonctions audio
+  - Introduction de `updateBuzzer()` appelée dans loop() pour un timing correct
+  - Les clics de bouton ne gèlent plus pendant la lecture des sons
+- **Optimisation écran MAP** : Élimination du redessinage complet lors de l'animation radar
+  - Ne met à jour que la ligne de balayage et les blips, pas l'écran entier
+  - Suppression du scintillement de l'en-tête/pied de page/onglets sur l'écran MAP
+  - Réduction du timer d'animation de 100ms à 50ms pour un balayage radar plus fluide
+- **Disposition écran MAP** : Correction du débordement du cercle radar sur le pied de page
+  - Ajustement de centerY de 140 à 130
+  - Ajustement du rayon de 80 à 70
+  - Le radar s'affiche maintenant correctement dans la zone de contenu avec des marges de sécurité
+
+### Optimisé
+- L'animation du radar se met à jour toutes les 50ms au lieu de 100ms (plus fluide)
+- La ligne de balayage précédente est correctement effacée avant de dessiner la nouvelle
+- Ajout d'un suivi d'état pour `previousRadarSweepAngle` permettant le redessinage sélectif
+
 ## [1.4.1] - 2025-12-19
 
 ### Corrigé
