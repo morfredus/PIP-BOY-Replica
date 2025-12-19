@@ -1,3 +1,28 @@
+#
+## [1.3.7] - 2025-12-19
+
+### Corrigé
+- Suppression définitive de tous les doublons d’objets globaux (ui, sensors, menu, button1, button2, buttonBoot)
+- Correction de l’ordre des includes et des déclarations pour garantir la compilation sur PlatformIO
+- Compilation et téléversement validés sur ESP32-S3
+
+### Documentation
+- Journal des modifications et README mis à jour pour refléter la refonte de la gestion boutons et rétroéclairage
+
+## [1.3.6] - 2025-12-19
+
+### Modifié
+- Gestion du rétroéclairage : PWM dédié, watchdog dans la loop, plus de conflit avec le buzzer
+- Gestion des boutons : remplacement complet par la librairie OneButton (appui court/long fiable, boot inclus)
+- Nettoyage du code principal, suppression des fragments et redéfinitions
+## [1.3.5] - 2025-12-18
+
+### Corrigé
+- Correction : la méthode `getTFT()` est maintenant correctement déclarée dans la classe `PipBoyUI`, ce qui résout les erreurs de compilation dans `menu_system.h`.
+- Compatibilité PlatformIO assurée après mise à jour du header (reconstruction complète nécessaire).
+
+### Documentation
+- Badge de version et documentation mis à jour en 1.3.5 (EN/FR).
 # Journal des modifications
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.

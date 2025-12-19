@@ -2,7 +2,23 @@
 
 Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, construite avec ESP32-S3 et offrant une interface monochrome verte rétro-futuriste.
 
-![Version](https://img.shields.io/badge/version-1.3.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.3.7-green.svg)
+#
+## [1.3.7] - 2025-12-19
+
+- Suppression de tous les doublons d’objets globaux, code principal nettoyé, compilation garantie.
+- Documentation et changelog mis à jour.
+
+## [1.3.6] - 2025-12-19
+
+- Gestion du rétroéclairage fiabilisée (PWM dédié, watchdog, plus de conflit avec le buzzer).
+- Gestion des boutons refondue avec OneButton (appui court/long, boot inclus).
+# Journal des modifications
+
+## [1.3.5] - 2025-12-18
+
+- Correction : la méthode `getTFT()` est maintenant correctement déclarée dans la classe `PipBoyUI`, ce qui résout les erreurs de compilation dans `menu_system.h`.
+- Compatibilité PlatformIO assurée après mise à jour du header (reconstruction complète nécessaire).
 ![Platform](https://img.shields.io/badge/platform-ESP32--S3-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
 
