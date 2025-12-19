@@ -2,13 +2,24 @@
 
 A fully functional Pip-Boy replica inspired by the Fallout game series, built with ESP32-S3 and featuring a retro-futuristic green monochrome interface.
 
-# PATCH 1.3.8
-# PATCH 1.3.9
-# PATCH 1.3.10
-# MINOR 1.4.0
-![Version](https://img.shields.io/badge/version-1.4.0-green.svg)
-## [1.4.0] - 2025-12-19
+![Version](https://img.shields.io/badge/version-1.5.0-green.svg)
 
+## [1.5.0] - 2025-12-19
+
+### Major Improvements
+- **Button Handling**: Completely rewritten OneButton integration with proper timing configuration and double-click support
+- **Display Optimization**: Eliminated screen flickering and curtain effect through smart partial updates
+- **Performance**: Dramatically reduced screen update frequency with intelligent caching system
+
+### Key Features
+- Double-click Button 1 to force screen refresh
+- Sensor values only update when they actually change (±0.1°C, ±0.5%, etc.)
+- Header and footer remain static during updates
+- All button events (click, double-click, long press) now reliably detected
+
+## Previous Versions
+
+### [1.4.0] - 2025-12-19
 - Altitude reference pressure (ALTITUDE_SEA_LEVEL_PRESSURE) is now configurable in config.h for correct altitude display. Set to your local sea level pressure (hPa).
 ## [1.3.10] - 2025-12-19
 
@@ -70,11 +81,14 @@ A fully functional Pip-Boy replica inspired by the Fallout game series, built wi
 
 ### 🎮 User Interaction
 
-- **Button 1**: Navigate between screens (STAT → DATA → RADIO → MAP)
-- **Button 2**: Context action (refresh sensors, fetch weather, select message)
+- **Button 1**:
+  - Single click: Navigate between screens (STAT → DATA → RADIO → MAP)
+  - Double-click: Force screen refresh
+  - Long press (800ms): Restart boot animation
+- **Button 2**:
+  - Single click: Context action (refresh sensors, fetch weather, select message)
+  - Long press (800ms): Reconnect WiFi
 - **Boot Button**: Quick return to STAT screen
-- **Long Press Button 1**: Restart boot animation
-- **Long Press Button 2**: Reconnect WiFi
 
 ### 🔊 Audio & Visual Feedback
 

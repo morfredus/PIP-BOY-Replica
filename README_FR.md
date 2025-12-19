@@ -2,13 +2,24 @@
 
 Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, construite avec ESP32-S3 et offrant une interface monochrome verte rétro-futuriste.
 
-# PATCH 1.3.8
-# PATCH 1.3.9
-# PATCH 1.3.10
-# MINEUR 1.4.0
-![Version](https://img.shields.io/badge/version-1.4.0-green.svg)
-## [1.4.0] - 2025-12-19
+![Version](https://img.shields.io/badge/version-1.5.0-green.svg)
 
+## [1.5.0] - 2025-12-19
+
+### Améliorations majeures
+- **Gestion des boutons** : Intégration OneButton complètement réécrite avec configuration des durées et support du double-clic
+- **Optimisation de l'affichage** : Élimination du scintillement et de l'effet rideau grâce aux mises à jour partielles intelligentes
+- **Performance** : Réduction drastique de la fréquence de mise à jour de l'écran avec système de cache intelligent
+
+### Fonctionnalités clés
+- Double-clic sur le bouton 1 pour forcer le rafraîchissement de l'écran
+- Les valeurs des capteurs ne se mettent à jour que si elles changent réellement (±0.1°C, ±0.5%, etc.)
+- L'en-tête et le pied de page restent statiques durant les mises à jour
+- Tous les événements boutons (clic, double-clic, appui long) sont maintenant détectés de façon fiable
+
+## Versions précédentes
+
+### [1.4.0] - 2025-12-19
 - La pression de référence pour l'altitude (ALTITUDE_SEA_LEVEL_PRESSURE) est maintenant configurable dans config.h pour un affichage correct de l'altitude. À régler selon la pression locale (hPa).
 ## [1.3.10] - 2025-12-19
 
@@ -70,11 +81,14 @@ Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, cons
 
 ### 🎮 Interaction utilisateur
 
-- **Bouton 1** : Navigation entre les écrans (STAT → DATA → RADIO → MAP)
-- **Bouton 2** : Action contextuelle (rafraîchir capteurs, récupérer météo, sélectionner message)
+- **Bouton 1** :
+  - Clic simple : Navigation entre les écrans (STAT → DATA → RADIO → MAP)
+  - Double-clic : Forcer le rafraîchissement de l'écran
+  - Appui long (800ms) : Redémarrer l'animation de boot
+- **Bouton 2** :
+  - Clic simple : Action contextuelle (rafraîchir capteurs, récupérer météo, sélectionner message)
+  - Appui long (800ms) : Reconnecter le WiFi
 - **Bouton Boot** : Retour rapide à l'écran STAT
-- **Appui long Bouton 1** : Redémarrer l'animation de boot
-- **Appui long Bouton 2** : Reconnecter le WiFi
 
 ### 🔊 Retours audio et visuels
 
