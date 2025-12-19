@@ -1,8 +1,3 @@
-// =========================================================
-// ALTITUDE REFERENCE PRESSURE (hPa)
-// =========================================================
-// Set this value to your local sea level pressure (in hPa) for correct altitude
-#define ALTITUDE_SEA_LEVEL_PRESSURE 1015.0
 #ifndef CONFIG_H
 #define CONFIG_H
 
