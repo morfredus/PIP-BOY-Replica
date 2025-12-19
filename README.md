@@ -2,8 +2,16 @@
 
 A fully functional Pip-Boy replica inspired by the Fallout game series, built with ESP32-S3 and featuring a retro-futuristic green monochrome interface.
 
-# PATCH 1.4.1
-![Version](https://img.shields.io/badge/version-1.4.1-green.svg)
+# PATCH 1.4.2
+![Version](https://img.shields.io/badge/version-1.4.2-green.svg)
+## [1.4.2] - 2025-12-19
+
+- **Fixed**: Buzzer now working - added missing PWM initialization
+- **Fixed**: Non-blocking audio - removed all delays from playBeep(), button clicks no longer freeze
+- **Fixed**: MAP screen optimization - eliminated full-screen redraw on radar animation (header/footer no longer flicker)
+- **Fixed**: MAP screen layout - radar circle no longer overflows onto footer (adjusted centerY: 140→130, radius: 80→70)
+- **Optimized**: Smoother radar animation (100ms → 50ms update interval)
+
 ## [1.4.1] - 2025-12-19
 
 - **Fixed**: Button detection issues - removed all blocking `delay()` calls from OneButton callbacks

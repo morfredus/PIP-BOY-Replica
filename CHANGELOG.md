@@ -1,3 +1,27 @@
+## [1.4.2] - 2025-12-19
+
+### Fixed
+- **Buzzer now working**: Added missing PWM initialization (`ledcSetup()` and `ledcAttachPin()`) in setup()
+  - Buzzer was silent because PWM channel was never configured
+  - All sound effects now work properly (click, select, boot, error sounds)
+- **Non-blocking audio**: Completely refactored `playBeep()` to be non-blocking
+  - Removed all `delay()` calls from audio functions
+  - Introduced `updateBuzzer()` called in loop() for proper timing
+  - Button clicks no longer freeze during sound playback
+- **MAP screen optimization**: Eliminated full-screen redraw on radar animation
+  - Only updates the sweep line and blips, not the entire screen
+  - Removed header/footer/tabs flickering on MAP screen
+  - Reduced animation timer from 100ms to 50ms for smoother radar sweep
+- **MAP screen layout**: Fixed radar circle overflow onto footer
+  - Adjusted centerY from 140 to 130
+  - Adjusted radius from 80 to 70
+  - Radar now properly fits within content area with safe margins
+
+### Optimized
+- Radar animation now updates every 50ms instead of 100ms (smoother)
+- Previous sweep line properly erased before drawing new one
+- State tracking added for `previousRadarSweepAngle` to enable selective redraw
+
 ## [1.4.1] - 2025-12-19
 
 ### Fixed
