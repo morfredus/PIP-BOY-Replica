@@ -72,11 +72,6 @@ OneButton buttonBoot(PIN_BUTTON_BOOT, true);
 // ========================================
 
 void playBeep(int frequency, int duration) {
-    Serial.print("[DEBUG] playBeep freq: ");
-    Serial.print(frequency);
-    Serial.print(" Hz, dur: ");
-    Serial.print(duration);
-    Serial.println(" ms");
     ledcWriteTone(BUZZER_PWM_CHANNEL, frequency);
     ledcWrite(BUZZER_PWM_CHANNEL, 128); // 50% duty
     delay(duration);
@@ -292,39 +287,47 @@ void setup() {
     // Initialiser les boutons avec OneButton
     Serial.println("[BUTTONS] Initializing OneButton...");
     button1.attachClick([](){
-        Serial.println("[BTN1] Click détecté");
         playClickSound();
+        ledOrange();
         menu->nextScreen();
+        delay(50);
+        ledGreen();
     });
     button2.attachClick([](){
-        Serial.println("[BTN2] Click détecté");
         playSelectSound();
+        ledOrange();
         menu->actionButton();
+        delay(50);
+        ledGreen();
     });
     buttonBoot.attachClick([](){
-        Serial.println("[BOOT] Click détecté");
         playBeep(500, 100);
+        ledRed();
         Serial.println("[SYSTEM] Reset to STAT screen");
         menu->previousScreen();
+        delay(100);
+        ledGreen();
     });
     button1.attachLongPressStart([](){
-        Serial.println("[BTN1] Long press détecté");
         Serial.println("[SYSTEM] Long press detected - Rebooting display...");
         playBootSound();
         ui->begin();
+        delay(1000);
         menu->redraw();
     });
     button2.attachLongPressStart([](){
-        Serial.println("[BTN2] Long press détecté");
         Serial.println("[SYSTEM] Long press detected - Reconnecting WiFi...");
+        ledOrange();
         tft.fillScreen(PIPBOY_BLACK);
         tft.setTextSize(1);
         tft.setTextColor(PIPBOY_GREEN);
         tft.setCursor(10, 100);
         tft.print("Reconnecting WiFi...");
         WiFi.disconnect();
+        delay(500);
         initWiFi();
         menu->redraw();
+        ledGreen();
     });
 
     // Créer le système de menu
@@ -353,60 +356,26 @@ void loop() {
     // Watchdog rétroéclairage : force la valeur à 255 à chaque itération
     setBacklight(255);
 
-    // Tick boutons OneButton - CRUCIAL pour la détection des événements
+    // Tick boutons OneButton
     button1.tick();
     button2.tick();
     buttonBoot.tick();
 
-    // DEBUG: Affichage de l'état des boutons sur le port série
-    static unsigned long lastButtonDebug = 0;
-    if (millis() - lastButtonDebug > 250) {
-        lastButtonDebug = millis();
-        Serial.print("BTN1: "); Serial.print(digitalRead(PIN_BUTTON_1));
-        Serial.print(" | BTN2: "); Serial.print(digitalRead(PIN_BUTTON_2));
-        Serial.print(" | BOOT: "); Serial.println(digitalRead(PIN_BUTTON_BOOT));
-    }
-
-    // DEBUG: Affichage de l'altitude et de la luminosité
-    static unsigned long lastDebug = 0;
-    if (millis() - lastDebug > 1000) {
-        lastDebug = millis();
-        Serial.print("[DEBUG] Altitude: ");
-        Serial.print(sensors->getAltitude());
-        Serial.print(" m | Lumière: ");
-        Serial.print(sensors->getLightLevel());
-        Serial.print(" (" );
-        Serial.print(sensors->getLightPercent());
-        Serial.println("%)");
-    }
-
-    // Mise à jour des capteurs
     sensors->update();
-
-    // Mise à jour du menu (gère les animations comme le radar)
     menu->update();
 
-    // Mise à jour des valeurs des capteurs uniquement sur l'écran STAT
     static unsigned long lastSensorUpdate = 0;
-    if (menu != nullptr && lastSensorUpdate + 500 < millis()) {
+    if (menu != nullptr && lastSensorUpdate + 200 < millis()) {
         lastSensorUpdate = millis();
         menu->updateSensorValues();
     }
 
-    // Gestion des LEDs en cas d'alerte
-    static bool wasWarning = false;
-    bool isWarning = sensors->isTemperatureWarning() ||
-                     sensors->isHumidityWarning() ||
-                     sensors->isPressureWarning();
-
-    if (isWarning) {
+    if (sensors->isTemperatureWarning() ||
+        sensors->isHumidityWarning() ||
+        sensors->isPressureWarning()) {
         ledPulse();
-    } else if (wasWarning && !isWarning) {
-        // Retour à la LED verte après une alerte
-        ledGreen();
     }
-    wasWarning = isWarning;
 
-    // Pas de delay pour permettre une réactivité maximale des boutons
-    delay(5);
+    menu->redraw();
+    delay(10);
 }
