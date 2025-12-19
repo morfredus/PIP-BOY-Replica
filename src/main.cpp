@@ -294,50 +294,37 @@ void setup() {
     button1.attachClick([](){
         Serial.println("[BTN1] Click détecté");
         playClickSound();
-        ledOrange();
         menu->nextScreen();
-        delay(50);
-        ledGreen();
     });
     button2.attachClick([](){
         Serial.println("[BTN2] Click détecté");
         playSelectSound();
-        ledOrange();
         menu->actionButton();
-        delay(50);
-        ledGreen();
     });
     buttonBoot.attachClick([](){
         Serial.println("[BOOT] Click détecté");
         playBeep(500, 100);
-        ledRed();
         Serial.println("[SYSTEM] Reset to STAT screen");
         menu->previousScreen();
-        delay(100);
-        ledGreen();
     });
     button1.attachLongPressStart([](){
         Serial.println("[BTN1] Long press détecté");
         Serial.println("[SYSTEM] Long press detected - Rebooting display...");
         playBootSound();
         ui->begin();
-        delay(1000);
         menu->redraw();
     });
     button2.attachLongPressStart([](){
         Serial.println("[BTN2] Long press détecté");
         Serial.println("[SYSTEM] Long press detected - Reconnecting WiFi...");
-        ledOrange();
         tft.fillScreen(PIPBOY_BLACK);
         tft.setTextSize(1);
         tft.setTextColor(PIPBOY_GREEN);
         tft.setCursor(10, 100);
         tft.print("Reconnecting WiFi...");
         WiFi.disconnect();
-        delay(500);
         initWiFi();
         menu->redraw();
-        ledGreen();
     });
 
     // Créer le système de menu
@@ -366,7 +353,7 @@ void loop() {
     // Watchdog rétroéclairage : force la valeur à 255 à chaque itération
     setBacklight(255);
 
-    // Tick boutons OneButton
+    // Tick boutons OneButton - CRUCIAL pour la détection des événements
     button1.tick();
     button2.tick();
     buttonBoot.tick();
@@ -393,21 +380,33 @@ void loop() {
         Serial.println("%)");
     }
 
+    // Mise à jour des capteurs
     sensors->update();
+
+    // Mise à jour du menu (gère les animations comme le radar)
     menu->update();
 
+    // Mise à jour des valeurs des capteurs uniquement sur l'écran STAT
     static unsigned long lastSensorUpdate = 0;
-    if (menu != nullptr && lastSensorUpdate + 200 < millis()) {
+    if (menu != nullptr && lastSensorUpdate + 500 < millis()) {
         lastSensorUpdate = millis();
         menu->updateSensorValues();
     }
 
-    if (sensors->isTemperatureWarning() ||
-        sensors->isHumidityWarning() ||
-        sensors->isPressureWarning()) {
-        ledPulse();
-    }
+    // Gestion des LEDs en cas d'alerte
+    static bool wasWarning = false;
+    bool isWarning = sensors->isTemperatureWarning() ||
+                     sensors->isHumidityWarning() ||
+                     sensors->isPressureWarning();
 
-    menu->redraw();
-    delay(10);
+    if (isWarning) {
+        ledPulse();
+    } else if (wasWarning && !isWarning) {
+        // Retour à la LED verte après une alerte
+        ledGreen();
+    }
+    wasWarning = isWarning;
+
+    // Pas de delay pour permettre une réactivité maximale des boutons
+    delay(5);
 }
