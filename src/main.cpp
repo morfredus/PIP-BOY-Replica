@@ -305,12 +305,12 @@ void setup() {
     Serial.println("[BUTTONS] Initializing OneButton...");
 
     // Configuration des durées pour OneButton (en ms)
-    button1.setClickTicks(50);        // Durée minimale pour détecter un clic
-    button1.setPressTicks(800);       // Durée pour détecter un appui long
-    button2.setClickTicks(50);
-    button2.setPressTicks(800);
-    buttonBoot.setClickTicks(50);
-    buttonBoot.setPressTicks(800);
+    button1.setClickMs(50);        // Durée minimale pour détecter un clic
+    button1.setPressMs(800);       // Durée pour détecter un appui long
+    button2.setClickMs(50);
+    button2.setPressMs(800);
+    buttonBoot.setClickMs(50);
+    buttonBoot.setPressMs(800);
 
     // Callbacks sans delay pour éviter le blocage
     button1.attachClick([](){

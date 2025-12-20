@@ -1,3 +1,9 @@
+## [1.5.2] - 2025-12-19
+
+### Corrigé
+- Erreur de compilation : Ajout d'accolades de portée pour la déclaration de variable dans le switch de `actionButton()`
+- Warnings de dépréciation : Remplacement de `setClickTicks()`/`setPressTicks()` par `setClickMs()`/`setPressMs()`
+
 ## [1.5.1] - 2025-12-19
 
 ### Corrigé

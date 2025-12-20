@@ -2,7 +2,13 @@
 
 Réplique fonctionnelle d'un Pip-Boy inspiré de la série de jeux Fallout, construite avec ESP32-S3 et offrant une interface monochrome verte rétro-futuriste.
 
-![Version](https://img.shields.io/badge/version-1.5.1-green.svg)
+![Version](https://img.shields.io/badge/version-1.5.2-green.svg)
+
+## [1.5.2] - 2025-12-19
+
+### Corrections de bugs
+- **Compilation corrigée** : Correction de la portée de variable dans l'instruction switch
+- **Warnings de dépréciation résolus** : Mise à jour vers la dernière API OneButton
 
 ## [1.5.1] - 2025-12-19
 
