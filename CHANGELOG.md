@@ -1,3 +1,9 @@
+## [1.5.2] - 2025-12-19
+
+### Fixed
+- Compilation error: Added scope braces for variable declaration in `actionButton()` switch case
+- Deprecation warnings: Replaced `setClickTicks()`/`setPressTicks()` with `setClickMs()`/`setPressMs()`
+
 ## [1.5.1] - 2025-12-19
 
 ### Fixed

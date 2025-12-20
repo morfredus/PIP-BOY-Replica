@@ -164,7 +164,7 @@ inline void MenuSystem::actionButton() {
             needsFullRedraw = true;
             redraw();
             break;
-        case SCREEN_RADIO:
+        case SCREEN_RADIO: {
             // Mise à jour de la sélection sans tout redessiner
             subMenuIndex = (subMenuIndex + 1) % radioMessageCount;
             // Effacer uniquement la zone des messages (pas tout l'écran)
@@ -183,6 +183,7 @@ inline void MenuSystem::actionButton() {
                 y += 25;
             }
             break;
+        }
         case SCREEN_MAP:
             radarSweepAngle = 0;
             needsFullRedraw = true;
