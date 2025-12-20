@@ -113,7 +113,7 @@ void playErrorSound() {
 }
 
 void playBootSound() {
-    playBeep(1000, 50);  // Bip légèrement plus long pour le boot
+    playBeep(1000, 30);  // Bip court pour le boot
 }
 
 // ========================================
@@ -228,9 +228,7 @@ void initWiFi() {
         snprintf(okMsg, sizeof(okMsg), "WiFi OK - %s", WiFi.localIP().toString().c_str());
         ui->drawWiFiProgress(okMsg, attempts);
 
-        playBeep(1000, 100);
-        delay(100);
-        playBeep(1200, 100);
+        playBeep(1200, 50);  // Bip court de connexion WiFi réussie
     } else {
         Serial.println("\n[WiFi] Connection failed!");
         ui->drawWiFiProgress("WiFi FAILED", attempts);
@@ -377,7 +375,7 @@ void setup() {
     Serial.println("\n[SYSTEM] Pip-Boy ready!");
     Serial.println("========================================\n");
 
-    playBeep(1500, 200);
+    playBeep(1500, 50);  // Bip court de démarrage
 }
 
 // ========================================
@@ -388,32 +386,13 @@ void loop() {
     // Watchdog rétroéclairage : force la valeur à 255 à chaque itération
     setBacklight(255);
 
+    // Gestion non-bloquante du buzzer
+    updateBuzzer();
+
     // Tick boutons OneButton - DOIT être appelé sans blocage
     button1.tick();
     button2.tick();
     buttonBoot.tick();
-
-    // DEBUG: Affichage de l'état des boutons sur le port série
-    static unsigned long lastButtonDebug = 0;
-    if (millis() - lastButtonDebug > 1000) {
-        lastButtonDebug = millis();
-        Serial.print("BTN1: "); Serial.print(digitalRead(PIN_BUTTON_1));
-        Serial.print(" | BTN2: "); Serial.print(digitalRead(PIN_BUTTON_2));
-        Serial.print(" | BOOT: "); Serial.println(digitalRead(PIN_BUTTON_BOOT));
-    }
-
-    // DEBUG: Affichage de l'altitude et de la luminosité
-    static unsigned long lastDebug = 0;
-    if (millis() - lastDebug > 2000) {
-        lastDebug = millis();
-        Serial.print("[DEBUG] Altitude: ");
-        Serial.print(sensors->getAltitude());
-        Serial.print(" m | Lumière: ");
-        Serial.print(sensors->getLightLevel());
-        Serial.print(" (" );
-        Serial.print(sensors->getLightPercent());
-        Serial.println("%)");
-    }
 
     // Mise à jour des capteurs
     sensors->update();
@@ -423,7 +402,7 @@ void loop() {
 
     // Mise à jour des valeurs de capteurs sur l'écran (seulement si changement)
     static unsigned long lastSensorUpdate = 0;
-    if (menu != nullptr && lastSensorUpdate + 500 < millis()) {
+    if (menu != nullptr && lastSensorUpdate + 200 < millis()) {
         lastSensorUpdate = millis();
         menu->updateSensorValues();
     }
@@ -435,6 +414,6 @@ void loop() {
         ledPulse();
     }
 
-    // Ne PAS appeler redraw() ici - seulement en cas de changement
-    delay(10);
+    // Petit délai pour ne pas saturer le CPU
+    delay(5);
 }
