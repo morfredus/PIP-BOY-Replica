@@ -12,19 +12,23 @@
 // DISPLAY CONFIGURATION
 // =========================================================
 
+
 // Display type selection
 // Supported displays:
 // - ST7789: 240x240 or 240x320 TFT display
+// - ILI9341: 240x320 TFT display (SPI)
 // - ST7735: 128x160 TFT display (smaller option)
-#define DISPLAY_TYPE_ST7789     // Use ST7789 display
+// Pour utiliser l'ILI9341, décommentez la ligne suivante et commentez les autres :
+//#define DISPLAY_TYPE_ILI9341    // Use ILI9341 display
+#define DISPLAY_TYPE_ST7789      // Use ST7789 display
 
 // Display dimensions
-#define DISPLAY_WIDTH           240
+#define DISPLAY_WIDTH           320
 #define DISPLAY_HEIGHT          240
 
 // Display rotation (0, 1, 2, or 3)
 // 0 = 0°, 1 = 90°, 2 = 180°, 3 = 270°
-#define DISPLAY_ROTATION        2
+#define DISPLAY_ROTATION        1
 
 // Display SPI mode
 #define DISPLAY_SPI_MODE        SPI_MODE2

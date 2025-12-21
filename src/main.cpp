@@ -27,7 +27,12 @@
 #include <WiFi.h>
 #include <WiFiMulti.h>
 #include <Adafruit_GFX.h>
+
+#ifdef DISPLAY_TYPE_ILI9341
+#include <Adafruit_ILI9341.h>
+#else
 #include <Adafruit_ST7789.h>
+#endif
 
 #include <Adafruit_NeoPixel.h>
 #include <OneButton.h>
@@ -44,7 +49,11 @@
 // ========================================
 
 // Ecran TFT
+#ifdef DISPLAY_TYPE_ILI9341
+Adafruit_ILI9341 tft = Adafruit_ILI9341(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_RST, PIN_TFT_MOSI, PIN_TFT_SCLK, PIN_TFT_MISO);
+#else
 Adafruit_ST7789 tft = Adafruit_ST7789(PIN_TFT_CS, PIN_TFT_DC, PIN_TFT_MOSI, PIN_TFT_SCLK, PIN_TFT_RST);
+#endif
 
 // NeoPixel
 Adafruit_NeoPixel neopixel = Adafruit_NeoPixel(1, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
@@ -268,11 +277,18 @@ void setup() {
     neopixel.setBrightness(50);
     setNeoPixel(50, 25, 0);
 
+
     // Initialiser l'écran TFT
     Serial.println("[DISPLAY] Initializing TFT...");
-    tft.init(240, 240, SPI_MODE2);
-    tft.setRotation(2);  // Orientation spécifiée
+#ifdef DISPLAY_TYPE_ILI9341
+    tft.begin();
+    tft.setRotation(DISPLAY_ROTATION);
+    tft.fillScreen(ILI9341_BLACK);
+#else
+    tft.init(DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_SPI_MODE);
+    tft.setRotation(DISPLAY_ROTATION);
     tft.fillScreen(PIPBOY_BLACK);
+#endif
 
     // Initialiser le rétroéclairage
     Serial.println("[DISPLAY] Initializing backlight...");

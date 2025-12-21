@@ -5,8 +5,9 @@
 //         Configuration Pinout ESP32-S3 DevKitC-1 N16R8
 // =========================================================
 
+
 // ------------------------------------
-// TFT ST7789 (SPI)
+// TFT ST7789 (SPI) 240x240 - 240x320
 // ------------------------------------
 // Configuration de l'écran couleur (TFT) utilisant le protocole SPI.
 #define PIN_TFT_MOSI              11  // SPI MOSI (Master Out Slave In) : Broche de données vers l'écran. Câblage direct.
@@ -17,9 +18,11 @@
 #define PIN_TFT_BL                7   // Backlight (Rétroéclairage) : Souvent utilisé avec le PWM pour ajuster la luminosité.
 
 // ------------------------------------
-// TFT ILI9341 (SPI) - Alternative
+// TFT ILI9341 (SPI) 240x320
 // ------------------------------------
-#define PIN_TFT_MISO             8   // SPI MISO (Master In Slave Out) : Broche de données depuis l'écran. Câblage direct.
+// Support de l'écran ILI9341 (SPI) 240x320 :
+// Utilise les mêmes broches que le ST7789, avec en plus :
+#define PIN_TFT_MISO              8   // SPI MISO (Master In Slave Out) : Broche de données depuis l'écran. Câblage direct.
 
 // ------------------------------------
 // I2C
